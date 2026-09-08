@@ -2,7 +2,6 @@
 
 SmartTask is a modern, offline-first Android productivity application designed to help users organize, schedule, and track their daily tasks efficiently. Built using modern Android development practices, Jetpack Compose, Material 3, and Clean Architecture principles.
 
----
 
 ## App Description
 
@@ -15,7 +14,6 @@ SmartTask is an intuitive productivity manager built to operate completely offli
 * **Reliable Task Scheduling**: Utilizes Android WorkManager for offline task reminders and recurring schedules.
 * **Fast Navigation**: Smooth onboarding and screen transitions built with Jetpack Navigation Compose.
 
----
 
 ## Key Features
 
@@ -34,7 +32,6 @@ SmartTask is an intuitive productivity manager built to operate completely offli
 * **Custom Animated Splash Screen**: Live checkmark vector animation on app startup.
 * **Light and Dark Themes**: Fully tailored color palettes for both bright and dark environments.
 
----
 
 ## Architecture and Tech Stack
 
@@ -53,7 +50,6 @@ SmartTask follows Modern Android Development (MAD) recommendations and Clean Arc
 * **Logging**: Timber
 * **Splash Screen**: Jetpack Core SplashScreen with Animated Vector Drawables
 
----
 
 ## Prerequisites and Requirements
 
@@ -62,7 +58,6 @@ SmartTask follows Modern Android Development (MAD) recommendations and Clean Arc
 * **Minimum SDK**: Android 10 (API level 29)
 * **Target SDK**: Android 15 (API level 35/37)
 
----
 
 ## Getting Started
 
@@ -83,5 +78,3 @@ SmartTask follows Modern Android Development (MAD) recommendations and Clean Arc
 
 4. **Run on Device / Emulator**:
    Select your connected device or emulator (API 29+) and press `Run`.
-
----
