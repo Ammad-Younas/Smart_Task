@@ -55,12 +55,6 @@ SmartTask follows Modern Android Development (MAD) recommendations and Clean Arc
 
 ---
 
-## Project Structure
-
-```
-
----
-
 ## Prerequisites and Requirements
 
 * **Android Studio**: Ladybug / 2024.2.1 or newer
