@@ -58,25 +58,6 @@ SmartTask follows Modern Android Development (MAD) recommendations and Clean Arc
 ## Project Structure
 
 ```
-SmartTask/
-├── app/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/madi/smarttask/
-│   │   │   │   ├── core/
-│   │   │   │   │   ├── domain/        # Domain models and shared business logic
-│   │   │   │   │   ├── presentation/  # MainActivity, Theme, Navigation, Base Components
-│   │   │   │   │   └── util/          # Utilities and Constants
-│   │   │   │   ├── di/                # Hilt Dependency Injection Modules
-│   │   │   │   ├── feature_onboarding/ # Onboarding feature screen and components
-│   │   │   │   └── SmartTaskApplication.kt
-│   │   │   └── res/                   # Drawables, Animators, Layouts, Values
-│   └── build.gradle.kts
-├── gradle/
-│   └── libs.versions.toml             # Centralized Gradle Version Catalog
-├── build.gradle.kts
-└── settings.gradle.kts
-```
 
 ---
 
@@ -110,7 +91,3 @@ SmartTask/
    Select your connected device or emulator (API 29+) and press `Run`.
 
 ---
-
-## License
-
-This project is licensed under the MIT License.
