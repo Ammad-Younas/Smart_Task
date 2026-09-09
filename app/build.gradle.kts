@@ -103,7 +103,8 @@ dependencies {
     // DataStore
     implementation(libs.androidx.datastore.preferences)
 
-    // Coil (Image Loading)
+    // Coil (Image Loading & SVG Support)
     implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
 
 }
