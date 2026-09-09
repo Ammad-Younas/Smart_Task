@@ -1,10 +1,13 @@
 package com.madi.smarttask.di
 
-import android.content.SharedPreferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.madi.smarttask.feature_onboarding.data.repository.OnboardingRepositoryImpl
 import com.madi.smarttask.feature_onboarding.domain.repository.OnboardingRepository
-import com.madi.smarttask.feature_onboarding.domain.usecase.LoadNextOnboardingPage
+import com.madi.smarttask.feature_onboarding.domain.usecase.GetOnboardingPages
+import com.madi.smarttask.core.domain.usecase.IsOnboardingCompleted
 import com.madi.smarttask.feature_onboarding.domain.usecase.OnboardingUseCases
+import com.madi.smarttask.feature_onboarding.domain.usecase.SetOnboardingCompleted
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,15 +20,17 @@ object OnboardingModule {
 
     @Provides
     @Singleton
-    fun provideOnboardingRepository(sharedPreferences: SharedPreferences) : OnboardingRepository {
-        return OnboardingRepositoryImpl(sharedPreferences = sharedPreferences)
+    fun provideOnboardingRepository(dataStore: DataStore<Preferences>): OnboardingRepository {
+        return OnboardingRepositoryImpl(dataStore = dataStore)
     }
 
     @Provides
     @Singleton
-    fun provideOnboardingUseCases(repository: OnboardingRepository) : OnboardingUseCases {
+    fun provideOnboardingUseCases(repository: OnboardingRepository): OnboardingUseCases {
         return OnboardingUseCases(
-            loadNextOnboardingPage = LoadNextOnboardingPage(repository)
+            getOnboardingPages = GetOnboardingPages(repository),
+            setOnboardingCompleted = SetOnboardingCompleted(repository),
+            isOnboardingCompleted = IsOnboardingCompleted(repository)
         )
     }
 }

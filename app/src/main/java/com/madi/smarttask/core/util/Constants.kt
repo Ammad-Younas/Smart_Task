@@ -1,6 +1,6 @@
 package com.madi.smarttask.core.util
 
 object Constants {
-
-    const val SHARED_PREF_NAME = "shared_pref"
+    const val DATASTORE_NAME = "user_preferences"
+    const val KEY_ONBOARDING_COMPLETED = "key_onboarding_completed"
 }

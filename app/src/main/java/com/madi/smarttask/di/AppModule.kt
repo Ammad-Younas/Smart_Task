@@ -1,14 +1,18 @@
 package com.madi.smarttask.di
 
-import android.app.Application
-import android.content.Context.MODE_PRIVATE
-import android.content.SharedPreferences
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import com.madi.smarttask.core.util.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = Constants.DATASTORE_NAME)
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -16,7 +20,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSharedPref(app: Application): SharedPreferences {
-        return app.getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE)
+    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
+        return context.dataStore
     }
 }

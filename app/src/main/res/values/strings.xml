@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Smart Task</string>
+    <string name="skip">Skip</string>
+    <string name="get_started">Get Started</string>
+    <string name="next">Next</string>
+
+    <string name="onboarding_title_1">Organize Your Tasks</string>
+    <string name="onboarding_desc_1">Manage your daily tasks, projects, and subtasks in one clean place.</string>
+
+    <string name="onboarding_title_2">Set Priorities &amp; Reminders</string>
+    <string name="onboarding_desc_2">Never miss a deadline. Set task priorities and get timely background notifications.</string>
+
+    <string name="onboarding_title_3">Track Your Productivity</string>
+    <string name="onboarding_desc_3">Stay focused, complete your goals, and track your daily achievement statistics.</string>
+    <string name="unknown_error">Unknown Error</string>
 </resources>
