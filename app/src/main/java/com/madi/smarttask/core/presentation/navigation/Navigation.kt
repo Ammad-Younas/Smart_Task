@@ -20,9 +20,9 @@ fun Navigation(
             route = Screen.OnBoardingScreen.route
         ) {
             OnboardingScreen(
-                onOnboardingFinished = {
+                onNavigate = { route ->
                     navController.popBackStack()
-                    navController.navigate(Screen.DashboardScreen.route)
+                    navController.navigate(route)
                 }
             )
         }
