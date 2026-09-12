@@ -13,7 +13,7 @@ import com.madi.smarttask.feature_task.task.TaskScreen
 @Composable
 fun Navigation(
     navController: NavHostController,
-    startDestination: String = Screen.Home.route
+    startDestination: String
 ) {
     NavHost(
         navController = navController,
@@ -32,15 +32,7 @@ fun Navigation(
         composable(
             route = Screen.Home.route
         ) {
-            Home(
-                onNavigateToOnboarding = {
-                    navController.navigate(Screen.OnBoardingScreen.route) {
-                        popUpTo(Screen.Home.route) {
-                            inclusive = true
-                        }
-                    }
-                }
-            )
+            Home()
         }
         composable(
             route = Screen.TaskScreen.route

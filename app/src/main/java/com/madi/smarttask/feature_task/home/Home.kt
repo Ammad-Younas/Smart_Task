@@ -13,19 +13,8 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun Home(
-    onNavigateToOnboarding: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    LaunchedEffect(key1 = true) {
-        viewModel.checkOnboardingStatus()
-        viewModel.eventFlow.collectLatest { event ->
-            when (event) {
-                is HomeViewModel.UiEvent.NavigateToOnboarding -> {
-                    onNavigateToOnboarding()
-                }
-            }
-        }
-    }
 
     Column(
         modifier = Modifier.fillMaxSize(),

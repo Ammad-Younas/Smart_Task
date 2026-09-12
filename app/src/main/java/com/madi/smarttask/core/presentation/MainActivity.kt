@@ -13,6 +13,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.activity.viewModels
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -25,8 +27,16 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    private val viewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        installSplashScreen().apply {
+            setKeepOnScreenCondition {
+                viewModel.isLoading.value
+            }
+        }
 
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.light(
@@ -70,7 +80,8 @@ class MainActivity : ComponentActivity() {
                         }
                     ) {
                         Navigation(
-                            navController = navController
+                            navController = navController,
+                            startDestination = viewModel.startDestination.value
                         )
                     }
                 }
