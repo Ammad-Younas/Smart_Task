@@ -7,5 +7,4 @@ sealed class Screen(val route: String) {
     object TaskScreen : Screen("task_screen")
     object NotificationScreen : Screen("notification_screen")
     object SettingScreen : Screen("setting_screen")
-    
 }

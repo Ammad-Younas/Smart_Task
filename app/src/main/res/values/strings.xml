@@ -32,4 +32,8 @@
     <string name="good_evening">Good Evening,</string>
     <string name="good_night">Good Night,</string>
     <string name="quote">Small steps make big progress.</string>
+    <string name="progress">Progress</string>
+
+    <string name="completed_count">%d Completed</string>
+    <string name="percentage_completed">%d%%</string>
 </resources>

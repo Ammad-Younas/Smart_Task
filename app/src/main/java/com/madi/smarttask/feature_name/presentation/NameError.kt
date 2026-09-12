@@ -1,9 +1,10 @@
 package com.madi.smarttask.feature_name.presentation
 
-import com.madi.smarttask.core.util.Constants
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.madi.smarttask.R
+import com.madi.smarttask.core.util.Constants
+import com.madi.smarttask.core.util.Error
 
 @Composable
 fun NameError.asString(): String {

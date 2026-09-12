@@ -18,34 +18,33 @@ import com.madi.smarttask.R
 @Composable
 fun SmartTaskToolBar(
     modifier: Modifier = Modifier,
-    showToolBar: Boolean = false,
     onNavigateUp: () -> Unit = {},
     showBackArrow: Boolean = false,
     navActions: @Composable RowScope.() -> Unit = {},
     title: @Composable () -> Unit = {}
 ) {
-    if (showToolBar){
-        TopAppBar(
-            modifier = modifier,
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-                navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-            ),
-            title = title,
-            navigationIcon = {
-                if (showBackArrow) {
-                    IconButton(
-                        onClick = { onNavigateUp() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.Back)
-                        )
-                    }
+
+    TopAppBar(
+        modifier = modifier,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+        ),
+        title = title,
+        navigationIcon = {
+            if (showBackArrow) {
+                IconButton(
+                    onClick = { onNavigateUp() }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.Back)
+                    )
                 }
-            },
-            actions = navActions,
-        )
-    }
+            }
+        },
+        actions = navActions,
+    )
+
 }
