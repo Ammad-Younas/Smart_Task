@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/app_logo">
-    <target
-        android:name="checkmark"
-        android:animation="@animator/draw_checkmark" />
-</animated-vector>

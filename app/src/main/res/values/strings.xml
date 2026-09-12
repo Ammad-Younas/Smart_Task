@@ -13,4 +13,9 @@
     <string name="onboarding_title_3">Track Your Productivity</string>
     <string name="onboarding_desc_3">Stay focused, complete your goals, and track your daily achievement statistics.</string>
     <string name="unknown_error">Unknown Error</string>
+    <string name="Back">Back</string>
+    <string name="home">Home</string>
+    <string name="task">Task</string>
+    <string name="notifications">Notifications</string>
+    <string name="setting">Setting</string>
 </resources>

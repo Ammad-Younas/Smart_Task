@@ -36,7 +36,7 @@ class OnboardingViewModel @Inject constructor(
             is OnboardingEvent.CompleteOnboarding -> {
                 viewModelScope.launch {
                     onboardingUseCases.setOnboardingCompleted(true)
-                    _eventFlow.emit(UiEvent.Navigate(Screen.DashboardScreen.route))
+                    _eventFlow.emit(UiEvent.Navigate(Screen.Home.route))
                 }
             }
         }

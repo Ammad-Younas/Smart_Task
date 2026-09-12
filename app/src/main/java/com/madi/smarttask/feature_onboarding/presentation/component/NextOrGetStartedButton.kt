@@ -45,9 +45,7 @@ fun NextOrGetStartedButton(
         )
     ) {
         Text(
-            text = if (pagerState.currentPage == pages.size - 1) stringResource(R.string.get_started) else stringResource(
-                R.string.next
-            ),
+            text = if (pagerState.currentPage == pages.size - 1) stringResource(R.string.get_started) else stringResource(R.string.next),
             style = MaterialTheme.typography.titleMedium
         )
     }

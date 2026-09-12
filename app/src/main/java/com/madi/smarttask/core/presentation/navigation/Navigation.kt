@@ -5,12 +5,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.madi.smarttask.feature_onboarding.presentation.OnboardingScreen
-import com.madi.smarttask.feature_task.dashboard.DashboardScreen
+import com.madi.smarttask.feature_setting.SettingScreen
+import com.madi.smarttask.feature_task.home.Home
+import com.madi.smarttask.feature_task.notification.NotificationScreen
+import com.madi.smarttask.feature_task.task.TaskScreen
 
 @Composable
 fun Navigation(
     navController: NavHostController,
-    startDestination: String
+    startDestination: String = Screen.Home.route
 ) {
     NavHost(
         navController = navController,
@@ -27,9 +30,32 @@ fun Navigation(
             )
         }
         composable(
-            route = Screen.DashboardScreen.route
+            route = Screen.Home.route
         ) {
-            DashboardScreen()
+            Home(
+                onNavigateToOnboarding = {
+                    navController.navigate(Screen.OnBoardingScreen.route) {
+                        popUpTo(Screen.Home.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
+        composable(
+            route = Screen.TaskScreen.route
+        ) {
+            TaskScreen()
+        }
+        composable(
+            route = Screen.NotificationScreen.route
+        ) {
+            NotificationScreen()
+        }
+        composable(
+            route = Screen.SettingScreen.route
+        ) {
+            SettingScreen()
         }
     }
 }
