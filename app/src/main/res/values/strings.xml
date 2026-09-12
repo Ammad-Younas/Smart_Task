@@ -43,4 +43,7 @@
     <string name="min">MIN</string>
     <string name="sec">SEC</string>
     <string name="next_task">Next Task</string>
+    <string name="upcoming_tasks">Upcoming Tasks</string>
+    <string name="see_all">See all</string>
+    <string name="due_date">Due Date</string>
 </resources>
