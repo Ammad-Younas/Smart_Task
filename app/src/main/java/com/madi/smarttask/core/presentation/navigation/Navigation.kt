@@ -4,11 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.madi.smarttask.feature_name.presentation.NameScreen
 import com.madi.smarttask.feature_onboarding.presentation.OnboardingScreen
 import com.madi.smarttask.feature_setting.SettingScreen
-import com.madi.smarttask.feature_task.home.Home
-import com.madi.smarttask.feature_task.notification.NotificationScreen
-import com.madi.smarttask.feature_task.task.TaskScreen
+import com.madi.smarttask.feature_task.home.presentation.HomeScreen
+import com.madi.smarttask.feature_notification.presentation.NotificationScreen
+import com.madi.smarttask.feature_task.task.presentation.TaskScreen
 
 @Composable
 fun Navigation(
@@ -30,9 +31,9 @@ fun Navigation(
             )
         }
         composable(
-            route = Screen.Home.route
+            route = Screen.HomeScreen.route
         ) {
-            Home()
+            HomeScreen()
         }
         composable(
             route = Screen.TaskScreen.route
@@ -48,6 +49,16 @@ fun Navigation(
             route = Screen.SettingScreen.route
         ) {
             SettingScreen()
+        }
+        composable(
+            route = Screen.NameScreen.route
+        ) {
+            NameScreen(
+                onNavigate = { route ->
+                    navController.popBackStack()
+                    navController.navigate(route)
+                }
+            )
         }
     }
 }

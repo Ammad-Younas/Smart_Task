@@ -18,4 +18,18 @@
     <string name="task">Task</string>
     <string name="notifications">Notifications</string>
     <string name="setting">Setting</string>
+    <string name="welcome">Welcome to Smart Task</string>
+    <string name="enter_your_name">Please enter your first name.</string>
+    <string name="save">Save</string>
+    <string name="first_name">First Name</string>
+    <string name="error_name_empty">Name cannot be empty</string>
+    <string name="error_name_too_short">Name must be at least %d characters</string>
+    <string name="error_name_too_long">Name cannot exceed %d characters</string>
+
+    <string name="good_morning">Good Morning,</string>
+    <string name="good_noon">Good Noon,</string>
+    <string name="good_afternoon">Good Afternoon,</string>
+    <string name="good_evening">Good Evening,</string>
+    <string name="good_night">Good Night,</string>
+    <string name="quote">Small steps make big progress.</string>
 </resources>

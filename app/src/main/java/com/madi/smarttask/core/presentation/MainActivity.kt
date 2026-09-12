@@ -30,21 +30,16 @@ class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
         installSplashScreen().apply {
-            setKeepOnScreenCondition {
-                viewModel.isLoading.value
-            }
+            setKeepOnScreenCondition { viewModel.isLoading.value }
         }
-
+        super.onCreate(savedInstanceState)
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.light(
+            statusBarStyle = SystemBarStyle.auto(
                 Color.TRANSPARENT,
                 Color.TRANSPARENT
             )
         )
-
         setContent {
             SmartTaskTheme {
                 val navController = rememberNavController()
@@ -53,7 +48,7 @@ class MainActivity : ComponentActivity() {
                 val snackbarHostState = remember { SnackbarHostState() }
 
                 val bottomNavRoutes = listOf(
-                    Screen.Home.route,
+                    Screen.HomeScreen.route,
                     Screen.TaskScreen.route,
                     Screen.NotificationScreen.route,
                     Screen.SettingScreen.route

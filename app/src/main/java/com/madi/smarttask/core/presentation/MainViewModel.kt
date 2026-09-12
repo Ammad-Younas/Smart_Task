@@ -16,9 +16,13 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
+import com.madi.smarttask.feature_name.domain.usecase.NameUseCases
+import kotlinx.coroutines.flow.combine
+
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    onboardingUseCases: OnboardingUseCases
+    onboardingUseCases: OnboardingUseCases,
+    nameUseCases: NameUseCases
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(true)
@@ -28,11 +32,16 @@ class MainViewModel @Inject constructor(
     val startDestination: State<String> = _startDestination
 
     init {
-        onboardingUseCases.isOnboardingCompleted().onEach { isCompleted ->
-            if (isCompleted) {
-                _startDestination.value = Screen.Home.route
-            } else {
+        combine(
+            onboardingUseCases.isOnboardingCompleted(),
+            nameUseCases.getUserName()
+        ) { isCompleted, name ->
+            if (!isCompleted) {
                 _startDestination.value = Screen.OnBoardingScreen.route
+            } else if (name.isNullOrBlank()) {
+                _startDestination.value = Screen.NameScreen.route
+            } else {
+                _startDestination.value = Screen.HomeScreen.route
             }
             delay(300.milliseconds)
             _isLoading.value = false

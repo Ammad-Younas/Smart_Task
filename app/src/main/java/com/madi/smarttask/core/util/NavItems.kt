@@ -12,7 +12,7 @@ import com.madi.smarttask.core.presentation.navigation.Screen
 object NavItems {
     val NAV_ITEMS = listOf(
         BottomNavItem(
-            route = Screen.Home.route,
+            route = Screen.HomeScreen.route,
             icon = Icons.Outlined.Home,
             contentDescription = R.string.home
         ),
