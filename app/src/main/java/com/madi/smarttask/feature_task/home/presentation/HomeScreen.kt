@@ -19,8 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.madi.smarttask.core.presentation.ui.theme.SpaceLarge
 import com.madi.smarttask.core.presentation.ui.theme.SpaceMedium
-import com.madi.smarttask.feature_task.home.presentation.component.Progress
 import com.madi.smarttask.feature_task.home.presentation.component.Greeting
+import com.madi.smarttask.feature_task.home.presentation.component.Progress
 
 @Composable
 fun HomeScreen(
@@ -42,7 +42,8 @@ fun HomeScreen(
         ) {
             Greeting(viewModel = viewModel)
             Spacer(Modifier.height(SpaceLarge))
-            Progress()
+            Progress(viewModel = viewModel)
+            Spacer(Modifier.height(SpaceLarge))
         }
     }
 }

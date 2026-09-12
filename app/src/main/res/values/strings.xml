@@ -36,4 +36,11 @@
 
     <string name="completed_count">%d Completed</string>
     <string name="percentage_completed">%d%%</string>
+
+    <string name="completed">Completed</string>
+    <string name="time_remaining">Time Remaining in next task</string>
+    <string name="hrs">HRS</string>
+    <string name="min">MIN</string>
+    <string name="sec">SEC</string>
+    <string name="next_task">Next Task</string>
 </resources>
