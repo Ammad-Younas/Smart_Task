@@ -9,4 +9,7 @@ sealed class Screen(val route: String) {
     object SettingScreen : Screen("setting_screen")
     object TaskDetailScreen : Screen("task_detail_screen")
     object EditTaskScreen : Screen("edit_task_screen")
+    object AppearanceScreen : Screen("appearance_screen")
+    object CategoriesScreen : Screen("categories_screen")
+    object AboutScreen : Screen("about_screen")
 }

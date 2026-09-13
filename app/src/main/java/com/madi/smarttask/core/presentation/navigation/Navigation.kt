@@ -8,6 +8,9 @@ import com.madi.smarttask.feature_name.presentation.NameScreen
 import com.madi.smarttask.feature_notification.presentation.NotificationScreen
 import com.madi.smarttask.feature_onboarding.presentation.OnboardingScreen
 import com.madi.smarttask.feature_setting.SettingScreen
+import com.madi.smarttask.feature_setting.presentation.AboutScreen
+import com.madi.smarttask.feature_setting.presentation.AppearanceScreen
+import com.madi.smarttask.feature_setting.presentation.CategoriesScreen
 import com.madi.smarttask.feature_task.edit_task.presentation.EditTaskScreen
 import com.madi.smarttask.feature_task.home.presentation.HomeScreen
 import com.madi.smarttask.feature_task.task.presentation.TaskScreen
@@ -54,7 +57,30 @@ fun Navigation(
         composable(
             route = Screen.SettingScreen.route
         ) {
-            SettingScreen()
+            SettingScreen(
+                onNavigate = navController::navigate,
+            )
+        }
+        composable(
+            route = Screen.AppearanceScreen.route
+        ) {
+            AppearanceScreen(
+                onNavigateUp = navController::navigateUp
+            )
+        }
+        composable(
+            route = Screen.CategoriesScreen.route
+        ) {
+            CategoriesScreen(
+                onNavigateUp = navController::navigateUp
+            )
+        }
+        composable(
+            route = Screen.AboutScreen.route
+        ) {
+            AboutScreen(
+                onNavigateUp = navController::navigateUp
+            )
         }
         composable(
             route = Screen.NameScreen.route
