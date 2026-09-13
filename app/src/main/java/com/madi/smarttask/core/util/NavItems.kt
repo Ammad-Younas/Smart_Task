@@ -19,7 +19,7 @@ object NavItems {
         BottomNavItem(
             route = Screen.TaskScreen.route,
             icon = Icons.Outlined.Add,
-            contentDescription = R.string.task
+            contentDescription = R.string.tasks
         ),
         BottomNavItem(
             route = Screen.NotificationScreen.route,

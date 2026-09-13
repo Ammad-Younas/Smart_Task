@@ -15,7 +15,7 @@
     <string name="unknown_error">Unknown Error</string>
     <string name="Back">Back</string>
     <string name="home">Home</string>
-    <string name="task">Task</string>
+    <string name="tasks">Tasks</string>
     <string name="notifications">Notifications</string>
     <string name="setting">Setting</string>
     <string name="welcome">Welcome to Smart Task</string>
@@ -39,6 +39,7 @@
 
     <string name="completed">Completed</string>
     <string name="time_remaining">Time Remaining in next task</string>
+    <string name="days">DAYS</string>
     <string name="hrs">HRS</string>
     <string name="min">MIN</string>
     <string name="sec">SEC</string>
@@ -46,4 +47,15 @@
     <string name="upcoming_tasks">Upcoming Tasks</string>
     <string name="see_all">See all</string>
     <string name="due_date">Due Date</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="create_task">Create Task</string>
+    <string name="my_tasks">My Tasks</string>
+    <string name="search">Search</string>
+    <string name="total_tasks">Total Tasks</string>
+    <string name="completed_tasks">Completed</string>
+    <string name="pending_tasks">Pending</string>
+    <string name="overdue_tasks">Overdue</string>
+    <string name="filter">Filter</string>
+    <string name="status">Status</string>
+    <string name="priority">Priority</string>
 </resources>

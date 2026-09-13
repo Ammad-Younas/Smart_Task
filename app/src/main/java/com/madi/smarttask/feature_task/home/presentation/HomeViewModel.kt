@@ -5,15 +5,14 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.madi.smarttask.core.util.DateFormatUtil
+import com.madi.smarttask.feature_name.domain.usecase.NameUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.util.Calendar
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
-import com.madi.smarttask.core.util.DateFormatUtil
-import com.madi.smarttask.feature_name.domain.usecase.NameUseCases
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -35,6 +34,9 @@ class HomeViewModel @Inject constructor(
     private val _percentage = mutableIntStateOf(70)
     val percentage: State<Int> = _percentage
 
+    private val _days = mutableIntStateOf(3)
+    val days: State<Int> = _days
+
     private val _hours = mutableIntStateOf(4)
     val hours: State<Int> = _hours
 
@@ -52,6 +54,8 @@ class HomeViewModel @Inject constructor(
 
     private val _currentDay = mutableStateOf("")
     val currentDay: State<String> = _currentDay
+
+    private var targetTimeMillis: Long = System.currentTimeMillis() + (3L * 86400 * 1000) + (4L * 3600 * 1000) + (52L * 60 * 1000)
 
     init {
         checkUserName()
@@ -87,21 +91,17 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun updateTimeRemaining() {
-        val calendar = Calendar.getInstance()
-        val nowHour = calendar.get(Calendar.HOUR_OF_DAY)
-        val nowMinute = calendar.get(Calendar.MINUTE)
-        val nowSecond = calendar.get(Calendar.SECOND)
+        val diffMillis = (targetTimeMillis - System.currentTimeMillis()).coerceAtLeast(0L)
+        val totalSeconds = diffMillis / 1000
 
-        val totalSecondsNow = nowHour * 3600 + nowMinute * 60 + nowSecond
-        val totalSecondsDay = 24 * 3600
-        val secondsRemaining = (totalSecondsDay - totalSecondsNow).coerceAtLeast(0)
+        _days.intValue = (totalSeconds / 86400).toInt()
+        val remainder = totalSeconds % 86400
+        _hours.intValue = (remainder / 3600).toInt()
+        _minutes.intValue = ((remainder % 3600) / 60).toInt()
+        _seconds.intValue = (remainder % 60).toInt()
 
-        _hours.intValue = secondsRemaining / 3600
-        _minutes.intValue = (secondsRemaining % 3600) / 60
-        _seconds.intValue = secondsRemaining % 60
-
-        val nextTaskTotalSec = (secondsRemaining + 6300) % 86400
-        _nextTaskHours.intValue = nextTaskTotalSec / 3600
-        _nextTaskMinutes.intValue = (nextTaskTotalSec % 3600) / 60
+        val nextTaskTotalSec = ((totalSeconds % 86400) + 6300) % 86400
+        _nextTaskHours.intValue = (nextTaskTotalSec / 3600).toInt()
+        _nextTaskMinutes.intValue = ((nextTaskTotalSec % 3600) / 60).toInt()
     }
 }

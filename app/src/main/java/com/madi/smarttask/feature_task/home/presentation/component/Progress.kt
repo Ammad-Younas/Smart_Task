@@ -116,7 +116,7 @@ fun Progress(
                     Spacer(modifier = Modifier.width(32.dp))
 
                     CountdownDigitalClock(
-                        modifier = Modifier.width(320.dp),
+                        modifier = Modifier.width(380.dp),
                         viewModel = viewModel,
                     )
                 }
@@ -209,9 +209,14 @@ private fun CountdownDigitalClock(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel,
 ) {
+    val days by viewModel.days
     val hours by viewModel.hours
     val minutes by viewModel.minutes
     val seconds by viewModel.seconds
+
+    val nextTaskHours by viewModel.nextTaskHours
+    val nextTaskMinutes by viewModel.nextTaskMinutes
+    val nextTaskString = String.format(LocalLocale.current.platformLocale, "%02dh %02dm", nextTaskHours, nextTaskMinutes)
 
     Column(
         modifier = modifier,
@@ -230,12 +235,28 @@ private fun CountdownDigitalClock(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.Top,
         ) {
+            DigitBox(value = String.format(LocalLocale.current.platformLocale, "%02d", days), label = stringResource(R.string.days))
+
+            Box(
+                modifier = Modifier
+                    .height(52.dp)
+                    .padding(horizontal = 4.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = ":",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+
             DigitBox(value = String.format(LocalLocale.current.platformLocale, "%02d", hours), label = stringResource(R.string.hrs))
             
             Box(
                 modifier = Modifier
                     .height(52.dp)
-                    .padding(horizontal = 6.dp),
+                    .padding(horizontal = 4.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -251,7 +272,7 @@ private fun CountdownDigitalClock(
             Box(
                 modifier = Modifier
                     .height(52.dp)
-                    .padding(horizontal = 6.dp),
+                    .padding(horizontal = 4.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -280,7 +301,7 @@ private fun DigitBox(
             modifier = Modifier
                 .clip(RoundedCornerShape(12.dp))
                 .background(containerColor)
-                .padding(horizontal = 14.dp, vertical = 10.dp),
+                .padding(horizontal = 10.dp, vertical = 10.dp),
             contentAlignment = Alignment.Center,
         ) {
             Text(
