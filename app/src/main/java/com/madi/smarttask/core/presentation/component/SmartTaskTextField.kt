@@ -30,6 +30,7 @@ fun SmartTaskTextField(
     singleLine: Boolean = true,
     leadingIcon: ImageVector? = null,
     @StringRes leadingIconDescription: Int? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     onValueChange: (String) -> Unit,
 ) {
@@ -57,6 +58,7 @@ fun SmartTaskTextField(
                     )
                 }
             },
+            trailingIcon = trailingIcon,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp)
         )

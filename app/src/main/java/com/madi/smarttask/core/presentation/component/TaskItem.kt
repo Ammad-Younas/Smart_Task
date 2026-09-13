@@ -22,43 +22,31 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.madi.smarttask.R
+import com.madi.smarttask.core.domain.model.Task
 import com.madi.smarttask.core.presentation.ui.theme.ExtraSpaceSmall
 import com.madi.smarttask.core.presentation.ui.theme.SpaceMedium
 import com.madi.smarttask.core.presentation.ui.theme.SpaceSmall
+import com.madi.smarttask.core.presentation.ui.theme.getCategoryColor
+import com.madi.smarttask.core.presentation.ui.theme.getPriorityColor
 import com.madi.smarttask.core.util.DateFormatUtil
-import com.madi.smarttask.core.domain.model.Category
-import com.madi.smarttask.core.domain.model.Priority
-import com.madi.smarttask.core.domain.model.Task
 
 @Composable
 fun TaskItem(
     modifier: Modifier = Modifier,
     task: Task,
     onCheckedChange: (Boolean) -> Unit = {},
+    onClick: () -> Unit = {}
 ) {
-    val priorityColor = when (task.priority) {
-        Priority.LOW -> Color(0xFF3B82F6)
-        Priority.MEDIUM -> Color(0xFFF59E0B)
-        Priority.HIGH -> Color(0xFFEF4444)
-        Priority.URGENT -> Color(0xFF9333EA)
-    }
-    
-    val categoryColor = when (task.category) {
-        Category.WORK -> Color(0xFF6366F1)
-        Category.PERSONAL -> Color(0xFF10B981)
-        Category.STUDY -> Color(0xFF06B6D4)
-        Category.HEALTH -> Color(0xFF84CC16)
-        Category.SHOPPING -> Color(0xFF64748B)
-    }
+    val priorityColor = getPriorityColor(task.priority)
+    val categoryColor = getCategoryColor(task.category)
 
     Column(
-        modifier = modifier.fillMaxWidth().clickable{}
+        modifier = modifier.fillMaxWidth().clickable { onClick() }
     ) {
         Row(
             modifier = Modifier

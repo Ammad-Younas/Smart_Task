@@ -28,6 +28,7 @@ import com.madi.smarttask.core.domain.model.Category
 import com.madi.smarttask.core.domain.model.Priority
 import com.madi.smarttask.core.domain.model.Task
 import com.madi.smarttask.core.presentation.component.TaskItem
+import com.madi.smarttask.core.presentation.navigation.Screen
 import com.madi.smarttask.core.presentation.ui.theme.SpaceLarge
 import com.madi.smarttask.core.presentation.ui.theme.SpaceMedium
 import com.madi.smarttask.core.presentation.ui.theme.SpaceSmall
@@ -36,7 +37,8 @@ import com.madi.smarttask.feature_task.home.presentation.component.Progress
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    onNavigate: (String) -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier
@@ -85,7 +87,8 @@ fun HomeScreen(
                     category = Category.WORK,
                     priority = Priority.HIGH,
                     dueDate = System.currentTimeMillis()
-                )
+                ),
+                onClick = { onNavigate(Screen.TaskDetailScreen.route) }
             )
         }
     }

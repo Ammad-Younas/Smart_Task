@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
@@ -24,12 +22,15 @@ import com.madi.smarttask.R
 import com.madi.smarttask.core.presentation.component.SmartTaskToolBar
 import com.madi.smarttask.core.presentation.ui.theme.NavActionIconSize
 import com.madi.smarttask.core.presentation.ui.theme.SpaceMedium
+import com.madi.smarttask.feature_task.task.presentation.component.CreateTask
 import com.madi.smarttask.feature_task.task.presentation.component.Dashboard
 import com.madi.smarttask.feature_task.task.presentation.component.TaskTabRow
 import com.madi.smarttask.feature_task.task.presentation.util.TaskTab
 
 @Composable
-fun TaskScreen() {
+fun TaskScreen(
+    onNavigate: (String) -> Unit = {}
+) {
 
     var selectedTab by remember { mutableStateOf(TaskTab.DASHBOARD) }
 
@@ -69,11 +70,10 @@ fun TaskScreen() {
         ) {
             when (selectedTab) {
                 TaskTab.DASHBOARD -> {
-                    Dashboard()
+                    Dashboard(onNavigate = onNavigate)
                 }
-
                 TaskTab.CREATE_TASK -> {
-
+                    CreateTask()
                 }
             }
         }

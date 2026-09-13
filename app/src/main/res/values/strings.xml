@@ -58,4 +58,18 @@
     <string name="filter">Filter</string>
     <string name="status">Status</string>
     <string name="priority">Priority</string>
+    <string name="task_details">Task Details</string>
+    <string name="edit">Edit</string>
+    <string name="more_options">More options</string>
+    <string name="due_time">Due Time</string>
+    <string name="category">Category</string>
+    <string name="productivity">Productivity</string>
+    <string name="task_completed_on_time">Task completed on time!</string>
+    <string name="delete_task">Delete Task</string>
+    <string name="edit_task">Edit Task</string>
+    <string name="task_title">Task Title</string>
+    <string name="description">Description</string>
+    <string name="mark_as_completed">Mark as completed</string>
+    <string name="update_task">Update Task</string>
+    <string name="clear_title">Clear Title</string>
 </resources>

@@ -5,11 +5,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.madi.smarttask.feature_name.presentation.NameScreen
+import com.madi.smarttask.feature_notification.presentation.NotificationScreen
 import com.madi.smarttask.feature_onboarding.presentation.OnboardingScreen
 import com.madi.smarttask.feature_setting.SettingScreen
+import com.madi.smarttask.feature_task.edit_task.presentation.EditTaskScreen
 import com.madi.smarttask.feature_task.home.presentation.HomeScreen
-import com.madi.smarttask.feature_notification.presentation.NotificationScreen
 import com.madi.smarttask.feature_task.task.presentation.TaskScreen
+import com.madi.smarttask.feature_task.task_detail.presentation.TaskDetailScreen
 
 @Composable
 fun Navigation(
@@ -33,12 +35,16 @@ fun Navigation(
         composable(
             route = Screen.HomeScreen.route
         ) {
-            HomeScreen()
+            HomeScreen(
+                onNavigate = navController::navigate
+            )
         }
         composable(
             route = Screen.TaskScreen.route
         ) {
-            TaskScreen()
+            TaskScreen(
+                onNavigate = navController::navigate
+            )
         }
         composable(
             route = Screen.NotificationScreen.route
@@ -58,6 +64,21 @@ fun Navigation(
                     navController.popBackStack()
                     navController.navigate(route)
                 }
+            )
+        }
+        composable(
+            route = Screen.TaskDetailScreen.route
+        ) {
+            TaskDetailScreen(
+                onNavigateUp = navController::navigateUp,
+                onEditClick = navController::navigate
+            )
+        }
+        composable(
+            route = Screen.EditTaskScreen.route
+        ) {
+            EditTaskScreen(
+                onNavigateUp = navController::navigateUp
             )
         }
     }

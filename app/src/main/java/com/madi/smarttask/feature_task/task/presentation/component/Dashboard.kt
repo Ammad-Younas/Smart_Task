@@ -24,12 +24,14 @@ import com.madi.smarttask.core.domain.model.Priority
 import com.madi.smarttask.core.domain.model.Task
 import com.madi.smarttask.core.domain.model.TaskStatus
 import com.madi.smarttask.core.presentation.component.TaskItem
+import com.madi.smarttask.core.presentation.navigation.Screen
 import com.madi.smarttask.core.presentation.ui.theme.SpaceSmall
 import com.madi.smarttask.feature_task.task.domain.model.Stats
 
 @Composable
 fun Dashboard(
     stats: Stats? = null,
+    onNavigate: (String) -> Unit = {}
 ) {
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
     var selectedStatus by remember { mutableStateOf<TaskStatus?>(TaskStatus.TOTAL) }
@@ -78,7 +80,8 @@ fun Dashboard(
                     category = Category.WORK,
                     priority = Priority.HIGH,
                     dueDate = System.currentTimeMillis()
-                )
+                ),
+                onClick = { onNavigate(Screen.TaskDetailScreen.route) }
             )
         }
     }
