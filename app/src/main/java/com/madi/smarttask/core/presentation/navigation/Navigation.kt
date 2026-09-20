@@ -2,11 +2,14 @@ package com.madi.smarttask.core.presentation.navigation
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.madi.smarttask.core.presentation.util.asString
+import com.madi.smarttask.core.util.UiText
 import com.madi.smarttask.feature_name.presentation.NameScreen
 import com.madi.smarttask.feature_notification.presentation.NotificationScreen
 import com.madi.smarttask.feature_onboarding.presentation.OnboardingScreen
@@ -18,13 +21,23 @@ import com.madi.smarttask.feature_task.edit_task.presentation.EditTaskScreen
 import com.madi.smarttask.feature_task.home.presentation.HomeScreen
 import com.madi.smarttask.feature_task.task.presentation.TaskScreen
 import com.madi.smarttask.feature_task.task_detail.presentation.TaskDetailScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun Navigation(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState,
-    startDestination: String
+    startDestination: String,
+    scope: CoroutineScope
 ) {
+    val context = LocalContext.current
+    val onShowSnackbar: (UiText) -> Unit = { uiText ->
+        scope.launch {
+            snackbarHostState.showSnackbar(uiText.asString(context))
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = startDestination
@@ -51,7 +64,8 @@ fun Navigation(
         ) {
             TaskScreen(
                 onNavigate = navController::navigate,
-                snackbarHostState = snackbarHostState
+                snackbarHostState = snackbarHostState,
+                scope = scope
             )
         }
         composable(
@@ -108,7 +122,8 @@ fun Navigation(
         ) {
             TaskDetailScreen(
                 onNavigateUp = navController::navigateUp,
-                onEditClick = navController::navigate
+                onEditClick = navController::navigate,
+                onShowSnackbar = onShowSnackbar
             )
         }
         composable(
@@ -121,7 +136,8 @@ fun Navigation(
             )
         ) {
             EditTaskScreen(
-                onNavigateUp = navController::navigateUp
+                onNavigateUp = navController::navigateUp,
+                onShowSnackbar = onShowSnackbar
             )
         }
     }

@@ -3,10 +3,13 @@ package com.madi.smarttask.feature_task.edit_task.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.madi.smarttask.R
 import com.madi.smarttask.core.domain.model.Task
 import com.madi.smarttask.core.domain.states.SmartTaskTextFieldState
 import com.madi.smarttask.core.domain.usecase.TaskUseCases
 import com.madi.smarttask.core.domain.util.ValidationUtil
+import com.madi.smarttask.core.util.UiEvent
+import com.madi.smarttask.core.util.UiText
 import com.madi.smarttask.feature_task.task.presentation.TaskEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,7 +38,7 @@ class EditTaskViewModel @Inject constructor(
         val taskId = savedStateHandle.get<Long>("taskId") ?: -1L
         if (taskId != -1L) {
             viewModelScope.launch {
-                taskUseCases.getTaskById(taskId)?.let { task ->
+                taskUseCases.getTaskById(taskId).firstOrNull()?.let { task ->
                     _state.update {
                         it.copy(
                             id = task.id,
@@ -76,6 +80,7 @@ class EditTaskViewModel @Inject constructor(
                     if (state.value.id != 0L) {
                         taskUseCases.deleteTask(state.value.id)
                     }
+                    _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.task_deleted)))
                     _eventFlow.emit(TaskEvent.TaskDeleted)
                 }
             }
@@ -98,6 +103,7 @@ class EditTaskViewModel @Inject constructor(
                             dueDate = state.value.dueDate
                         )
                     )
+                    _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.task_updated)))
                     _eventFlow.emit(TaskEvent.TaskUpdated)
                 }
             }

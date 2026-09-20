@@ -19,6 +19,8 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,25 +52,33 @@ import com.madi.smarttask.core.presentation.component.SmartTaskToolBar
 import com.madi.smarttask.core.util.DateFormatUtil
 import com.madi.smarttask.core.util.FutureOrPresentSelectableDates
 import com.madi.smarttask.core.util.UiEvent
+import com.madi.smarttask.core.util.UiText
 import com.madi.smarttask.feature_task.edit_task.presentation.component.ActionButtons
 import com.madi.smarttask.feature_task.edit_task.presentation.component.StatusToggle
 import com.madi.smarttask.feature_task.task.presentation.TaskEvent
-import kotlinx.coroutines.flow.collectLatest
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditTaskScreen(
     onNavigateUp: () -> Unit = {},
-    viewModel: EditTaskViewModel = hiltViewModel()
+    viewModel: EditTaskViewModel = hiltViewModel(),
+    onShowSnackbar: (UiText) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     val state = viewModel.state.collectAsState().value
 
+    var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(key1 = true) {
-        viewModel.eventFlow.collectLatest { event ->
+        viewModel.eventFlow.collect { event ->
             when (event) {
-                TaskEvent.TaskUpdated, TaskEvent.TaskDeleted, UiEvent.NavigateUp -> onNavigateUp()
+                is UiEvent.ShowSnackBar -> {
+                    onShowSnackbar(event.uiText)
+                }
+                TaskEvent.TaskUpdated, TaskEvent.TaskDeleted, UiEvent.NavigateUp -> {
+                    onNavigateUp()
+                }
                 else -> Unit
             }
         }
@@ -89,6 +99,43 @@ fun EditTaskScreen(
         initialMinute = cal.get(Calendar.MINUTE),
         is24Hour = false
     )
+
+    if (showDeleteConfirmationDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmationDialog = false },
+            title = {
+                Text(
+                    text = stringResource(R.string.delete_task_confirmation_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.delete_task_confirmation_message),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDeleteConfirmationDialog = false
+                        viewModel.onEvent(EditTaskEvent.DeleteTask)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text(stringResource(R.string.delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmationDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
 
     if (showDatePicker) {
         DatePickerDialog(
@@ -272,7 +319,7 @@ fun EditTaskScreen(
             
             ActionButtons(
                 onUpdateClick = { viewModel.onEvent(EditTaskEvent.UpdateTask) },
-                onDeleteClick = { viewModel.onEvent(EditTaskEvent.DeleteTask) }
+                onDeleteClick = { showDeleteConfirmationDialog = true }
             )
         }
     }

@@ -1,17 +1,19 @@
 package com.madi.smarttask.feature_task.home.presentation
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.madi.smarttask.core.domain.model.Priority
 import com.madi.smarttask.core.domain.model.Task
 import com.madi.smarttask.core.domain.usecase.TaskUseCases
 import com.madi.smarttask.core.util.DateFormatUtil
 import com.madi.smarttask.feature_name.domain.usecase.NameUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -22,46 +24,10 @@ class HomeViewModel @Inject constructor(
     private val taskUseCases: TaskUseCases
 ) : ViewModel() {
 
-    private val _isLoading = mutableStateOf(true)
-    val isLoading: State<Boolean> = _isLoading
-    
-    private val _userName = mutableStateOf("")
-    val userName: State<String> = _userName
+    private val _state = MutableStateFlow(HomeState())
+    val state: StateFlow<HomeState> = _state.asStateFlow()
 
-    private val _completedTaskCount = mutableIntStateOf(0)
-    val completedTaskCount: State<Int> = _completedTaskCount
-
-    private val _totalTaskCount = mutableIntStateOf(0)
-    val totalTaskCount: State<Int> = _totalTaskCount
-
-    private val _percentage = mutableIntStateOf(0)
-    val percentage: State<Int> = _percentage
-
-    private val _upcomingTasks = mutableStateOf<List<Task>>(emptyList())
-    val upcomingTasks: State<List<Task>> = _upcomingTasks
-
-    private val _days = mutableIntStateOf(3)
-    val days: State<Int> = _days
-
-    private val _hours = mutableIntStateOf(4)
-    val hours: State<Int> = _hours
-
-    private val _minutes = mutableIntStateOf(52)
-    val minutes: State<Int> = _minutes
-
-    private val _seconds = mutableIntStateOf(54)
-    val seconds: State<Int> = _seconds
-
-    private val _nextTaskHours = mutableIntStateOf(1)
-    val nextTaskHours: State<Int> = _nextTaskHours
-
-    private val _nextTaskMinutes = mutableIntStateOf(45)
-    val nextTaskMinutes: State<Int> = _nextTaskMinutes
-
-    private val _currentDay = mutableStateOf("")
-    val currentDay: State<String> = _currentDay
-
-    private var targetTimeMillis: Long = System.currentTimeMillis() + (3L * 86400 * 1000) + (4L * 3600 * 1000) + (52L * 60 * 1000)
+    private var targetTimeMillis: Long = 0L
 
     init {
         checkUserName()
@@ -74,27 +40,55 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val name = nameUseCases.getUserName().first()
             if (!name.isNullOrBlank()) {
-                _userName.value = name
+                _state.update { it.copy(userName = name) }
             }
-            _isLoading.value = false
         }
     }
 
     private fun initProgressData() {
-        _currentDay.value = DateFormatUtil.timestampToFormatedString(System.currentTimeMillis(), "EEEE")
+        val currentDay = DateFormatUtil.timestampToFormatedString(System.currentTimeMillis(), "EEEE")
+        _state.update { it.copy(currentDay = currentDay) }
         updateTimeRemaining()
     }
 
     private fun observeTasks() {
         viewModelScope.launch {
             taskUseCases.getTasks().collect { tasks ->
-                _upcomingTasks.value = tasks.take(3)
                 val total = tasks.size
                 val completed = tasks.count { it.isCompleted }
-                _totalTaskCount.intValue = total
-                _completedTaskCount.intValue = completed
-                _percentage.intValue = if (total > 0) ((completed.toFloat() / total.toFloat()) * 100f).toInt().coerceIn(0, 100) else 0
+                val percentage = if (total > 0) ((completed.toFloat() / total.toFloat()) * 100f).toInt().coerceIn(0, 100) else 0
+
+                val sortedTasks = tasks.sortedWith(
+                    compareByDescending<Task> { it.priority.ordinal }
+                        .thenByDescending { it.dueDate }
+                )
+                val urgentTasks = sortedTasks.filter { it.priority == Priority.URGENT }
+                val upcomingTasks = if (urgentTasks.size >= 3) {
+                    urgentTasks.sortedByDescending { it.dueDate }
+                } else {
+                    sortedTasks.take(3)
+                }
+
+                val nearestUpcomingTask = tasks
+                    .filter { !it.isCompleted && it.dueDate > System.currentTimeMillis() }
+                    .minByOrNull { it.dueDate }
+
+                targetTimeMillis = nearestUpcomingTask?.dueDate ?: 0L
+
+                _state.update {
+                    it.copy(
+                        percentage = percentage,
+                        upcomingTasks = upcomingTasks
+                    )
+                }
+                updateTimeRemaining()
             }
+        }
+    }
+
+    fun toggleTaskCompletion(task: Task, isCompleted: Boolean) {
+        viewModelScope.launch {
+            taskUseCases.updateTask(task.copy(isCompleted = isCompleted))
         }
     }
 
@@ -108,17 +102,42 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun updateTimeRemaining() {
-        val diffMillis = (targetTimeMillis - System.currentTimeMillis()).coerceAtLeast(0L)
+        val currentTime = System.currentTimeMillis()
+        if (targetTimeMillis <= currentTime) {
+            _state.update {
+                it.copy(
+                    days = 0,
+                    hours = 0,
+                    minutes = 0,
+                    seconds = 0,
+                    nextTaskHours = 0,
+                    nextTaskMinutes = 0
+                )
+            }
+            return
+        }
+
+        val diffMillis = targetTimeMillis - currentTime
         val totalSeconds = diffMillis / 1000
 
-        _days.intValue = (totalSeconds / 86400).toInt()
+        val days = (totalSeconds / 86400).toInt()
         val remainder = totalSeconds % 86400
-        _hours.intValue = (remainder / 3600).toInt()
-        _minutes.intValue = ((remainder % 3600) / 60).toInt()
-        _seconds.intValue = (remainder % 60).toInt()
+        val hours = (remainder / 3600).toInt()
+        val minutes = ((remainder % 3600) / 60).toInt()
+        val seconds = (remainder % 60).toInt()
 
-        val nextTaskTotalSec = ((totalSeconds % 86400) + 6300) % 86400
-        _nextTaskHours.intValue = (nextTaskTotalSec / 3600).toInt()
-        _nextTaskMinutes.intValue = ((nextTaskTotalSec % 3600) / 60).toInt()
+        val nextTaskHours = (totalSeconds / 3600).toInt()
+        val nextTaskMinutes = ((totalSeconds % 3600) / 60).toInt()
+
+        _state.update {
+            it.copy(
+                days = days,
+                hours = hours,
+                minutes = minutes,
+                seconds = seconds,
+                nextTaskHours = nextTaskHours,
+                nextTaskMinutes = nextTaskMinutes
+            )
+        }
     }
 }

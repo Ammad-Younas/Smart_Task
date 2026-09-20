@@ -6,16 +6,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.madi.smarttask.core.presentation.component.SmartTaskScaffold
@@ -23,6 +23,7 @@ import com.madi.smarttask.core.presentation.navigation.Navigation
 import com.madi.smarttask.core.presentation.navigation.Screen
 import com.madi.smarttask.core.presentation.ui.theme.SmartTaskTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -46,6 +47,7 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
                 val snackbarHostState = remember { SnackbarHostState() }
+                val coroutineScope : CoroutineScope = rememberCoroutineScope()
 
                 val bottomNavRoutes = listOf(
                     Screen.HomeScreen.route,
@@ -64,12 +66,15 @@ class MainActivity : ComponentActivity() {
                         snackbarHostState = snackbarHostState,
                         onNavigate = { route ->
                             if (currentRoute != route) {
-                                navController.navigate(route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                                if (route == Screen.HomeScreen.route && navController.popBackStack(Screen.HomeScreen.route, false)) {
+                                } else {
+                                    navController.navigate(route) {
+                                        popUpTo(Screen.HomeScreen.route) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                    launchSingleTop = true
-                                    restoreState = true
                                 }
                             }
                         }
@@ -77,7 +82,8 @@ class MainActivity : ComponentActivity() {
                         Navigation(
                             navController = navController,
                             startDestination = viewModel.startDestination.value,
-                            snackbarHostState = snackbarHostState
+                            snackbarHostState = snackbarHostState,
+                            scope = coroutineScope
                         )
                     }
                 }

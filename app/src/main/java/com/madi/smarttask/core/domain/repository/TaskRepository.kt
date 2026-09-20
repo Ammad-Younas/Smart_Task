@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface TaskRepository {
     fun getTasks(): Flow<List<Task>>
     fun getStats(): Flow<Stats>
-    suspend fun getTaskById(id: Long): Task?
+    fun getTaskById(id: Long): Flow<Task?>
     suspend fun insertTask(task: Task)
     suspend fun updateTask(task: Task)
     suspend fun deleteTask(id: Long)

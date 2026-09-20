@@ -18,6 +18,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -38,7 +40,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigate: (String) -> Unit = {}
 ) {
-    val upcomingTasks = viewModel.upcomingTasks.value
+    val state by viewModel.state.collectAsState()
 
     LazyColumn(
         modifier = Modifier
@@ -51,9 +53,9 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item {
-            Greeting(viewModel = viewModel)
+            Greeting(userName = state.userName)
             Spacer(Modifier.height(SpaceLarge))
-            Progress(viewModel = viewModel)
+            Progress(state = state)
             Spacer(Modifier.height(SpaceLarge))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -80,9 +82,12 @@ fun HomeScreen(
             }
             Spacer(Modifier.height(SpaceSmall))
         }
-        items(upcomingTasks) { task ->
+        items(state.upcomingTasks) { task ->
             TaskItem(
                 task = task,
+                onCheckedChange = { isChecked ->
+                    viewModel.toggleTaskCompletion(task, isChecked)
+                },
                 onClick = { onNavigate(Screen.TaskDetailScreen.passTaskId(task.id)) }
             )
         }

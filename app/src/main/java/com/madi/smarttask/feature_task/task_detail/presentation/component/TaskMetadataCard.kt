@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Flag
@@ -17,13 +18,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.madi.smarttask.R
-import com.madi.smarttask.core.presentation.ui.theme.TaskCompleted
 import com.madi.smarttask.core.domain.model.TaskDetail
-import com.madi.smarttask.core.util.DateFormatUtil
+import com.madi.smarttask.core.presentation.ui.theme.TaskCompleted
 import com.madi.smarttask.core.presentation.ui.theme.getPriorityColor
+import com.madi.smarttask.core.util.DateFormatUtil
 
 @Composable
 fun TaskMetadataCard(
@@ -73,15 +75,35 @@ fun TaskMetadataCard(
                 value = taskDetail.task.category.name.lowercase().replaceFirstChar { it.uppercase() }
             )
             DividerRow()
+            
+            val isOverdue = !taskDetail.task.isCompleted && taskDetail.task.dueDate in 1..<System.currentTimeMillis()
+            val (statusText, statusIcon, statusColor) = when {
+                taskDetail.task.isCompleted -> Triple(
+                    stringResource(R.string.completed),
+                    Icons.Default.Check,
+                    TaskCompleted
+                )
+                isOverdue -> Triple(
+                    stringResource(R.string.overdue_tasks),
+                    Icons.Default.Error,
+                    Color(0xFFEF4444)
+                )
+                else -> Triple(
+                    stringResource(R.string.pending_tasks),
+                    Icons.Default.Schedule,
+                    Color(0xFFF59E0B)
+                )
+            }
+
             MetadataRow(
                 icon = Icons.Outlined.CheckCircle,
                 label = stringResource(R.string.status),
                 valueComponent = {
                     DetailChip(
-                        icon = Icons.Default.Check,
-                        text = stringResource(R.string.completed),
-                        containerColor = TaskCompleted.copy(alpha = 0.15f),
-                        contentColor = TaskCompleted
+                        icon = statusIcon,
+                        text = statusText,
+                        containerColor = statusColor.copy(alpha = 0.15f),
+                        contentColor = statusColor
                     )
                 }
             )

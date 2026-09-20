@@ -12,13 +12,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,27 +38,70 @@ import com.madi.smarttask.core.presentation.component.SmartTaskToolBar
 import com.madi.smarttask.core.presentation.navigation.Screen
 import com.madi.smarttask.core.presentation.ui.theme.NavActionIconSize
 import com.madi.smarttask.core.util.UiEvent
+import com.madi.smarttask.core.util.UiText
+import com.madi.smarttask.feature_task.task.presentation.TaskEvent
 import com.madi.smarttask.feature_task.task_detail.presentation.component.TaskDetailHeader
 import com.madi.smarttask.feature_task.task_detail.presentation.component.TaskMetadataCard
-import com.madi.smarttask.feature_task.task.presentation.TaskEvent
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun TaskDetailScreen(
     onNavigateUp: () -> Unit = {},
     onEditClick: (String) -> Unit = {},
-    viewModel: TaskDetailViewModel = hiltViewModel()
+    viewModel: TaskDetailViewModel = hiltViewModel(),
+    onShowSnackbar: (UiText) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     val state = viewModel.state.collectAsState().value
 
+    var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(key1 = true) {
-        viewModel.eventFlow.collectLatest { event ->
+        viewModel.eventFlow.collect { event ->
             when (event) {
+                is UiEvent.ShowSnackBar -> {
+                    onShowSnackbar(event.uiText)
+                }
                 TaskEvent.TaskDeleted, UiEvent.NavigateUp -> onNavigateUp()
                 else -> Unit
             }
         }
+    }
+
+    if (showDeleteConfirmationDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmationDialog = false },
+            title = {
+                Text(
+                    text = stringResource(R.string.delete_task_confirmation_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.delete_task_confirmation_message),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDeleteConfirmationDialog = false
+                        viewModel.onEvent(TaskDetailEvent.DeleteTask)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text(stringResource(R.string.delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmationDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
     }
 
     Column(
@@ -97,7 +148,7 @@ fun TaskDetailScreen(
             )
             TaskMetadataCard(taskDetail = state.taskDetail)
             Spacer(modifier = Modifier.weight(1f))
-            DeleteTaskButton(onClick = { viewModel.onEvent(TaskDetailEvent.DeleteTask) })
+            DeleteTaskButton(onClick = { showDeleteConfirmationDialog = true })
         }
     }
 }

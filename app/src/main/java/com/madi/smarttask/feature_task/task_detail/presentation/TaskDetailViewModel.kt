@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,8 +34,8 @@ class TaskDetailViewModel @Inject constructor(
     init {
         val taskId = savedStateHandle.get<Long>("taskId") ?: -1L
         if (taskId != -1L) {
-            viewModelScope.launch {
-                taskUseCases.getTaskById(taskId)?.let { task ->
+            taskUseCases.getTaskById(taskId).onEach { task ->
+                if (task != null) {
                     val currentTime = System.currentTimeMillis()
                     val status = when {
                         task.isCompleted -> TaskStatus.COMPLETED
@@ -49,7 +51,7 @@ class TaskDetailViewModel @Inject constructor(
                         )
                     }
                 }
-            }
+            }.launchIn(viewModelScope)
         }
     }
 

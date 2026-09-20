@@ -12,12 +12,11 @@ import com.madi.smarttask.R
 import com.madi.smarttask.core.presentation.ui.theme.ExtraSpaceSmall
 import com.madi.smarttask.core.presentation.ui.theme.SpaceSmall
 import com.madi.smarttask.core.util.toGreeting
-import com.madi.smarttask.feature_task.home.presentation.HomeViewModel
 import java.util.Date
 
 @Composable
 fun Greeting(
-    viewModel: HomeViewModel
+    userName: String
 ) {
     Text(
         text = stringResource(id = Date().toGreeting()),
@@ -26,7 +25,7 @@ fun Greeting(
     )
     Spacer(modifier = Modifier.height(ExtraSpaceSmall))
     Text(
-        text = viewModel.userName.value,
+        text = userName,
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.ExtraBold
     )

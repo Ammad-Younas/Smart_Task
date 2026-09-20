@@ -28,8 +28,8 @@ class TaskRepositoryImpl (
             .map { entity -> entity?.toStats() ?: Stats(0, 0, 0, 0) }
     }
 
-    override suspend fun getTaskById(id: Long): Task? {
-        return dao.getTaskById(id)?.toTask()
+    override fun getTaskById(id: Long): Flow<Task?> {
+        return dao.getTaskById(id).map { it?.toTask() }
     }
 
     override suspend fun insertTask(task: Task) {

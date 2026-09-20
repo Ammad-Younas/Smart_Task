@@ -39,18 +39,18 @@ import com.madi.smarttask.R
 import com.madi.smarttask.core.presentation.ui.theme.SpaceLarge
 import com.madi.smarttask.core.presentation.ui.theme.SpaceMedium
 import com.madi.smarttask.core.presentation.ui.theme.SpaceSmall
-import com.madi.smarttask.feature_task.home.presentation.HomeViewModel
+import com.madi.smarttask.feature_task.home.presentation.HomeState
 
 @Composable
 fun Progress(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel,
+    state: HomeState,
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val tertiaryColor = MaterialTheme.colorScheme.tertiary
     val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
 
-    val percentage by viewModel.percentage
+    val percentage = state.percentage
     val targetProgress = (percentage / 100f).coerceIn(0f, 1f)
 
     val animatedProgress by animateFloatAsState(
@@ -59,7 +59,7 @@ fun Progress(
         label = "progressAnimation",
     )
 
-    val currentDay by viewModel.currentDay
+    val currentDay = state.currentDay
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
@@ -117,7 +117,7 @@ fun Progress(
 
                     CountdownDigitalClock(
                         modifier = Modifier.width(380.dp),
-                        viewModel = viewModel,
+                        state = state,
                     )
                 }
             } else {
@@ -139,7 +139,7 @@ fun Progress(
 
                     CountdownDigitalClock(
                         modifier = Modifier.fillMaxWidth(),
-                        viewModel = viewModel,
+                        state = state,
                     )
                 }
             }
@@ -207,16 +207,12 @@ private fun CircularProgressSection(
 @Composable
 private fun CountdownDigitalClock(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel,
+    state: HomeState,
 ) {
-    val days by viewModel.days
-    val hours by viewModel.hours
-    val minutes by viewModel.minutes
-    val seconds by viewModel.seconds
-
-    val nextTaskHours by viewModel.nextTaskHours
-    val nextTaskMinutes by viewModel.nextTaskMinutes
-    val nextTaskString = String.format(LocalLocale.current.platformLocale, "%02dh %02dm", nextTaskHours, nextTaskMinutes)
+    val days = state.days
+    val hours = state.hours
+    val minutes = state.minutes
+    val seconds = state.seconds
 
     Column(
         modifier = modifier,

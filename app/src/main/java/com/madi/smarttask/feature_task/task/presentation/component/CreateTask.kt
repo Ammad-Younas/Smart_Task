@@ -67,12 +67,7 @@ import java.util.Calendar
 @Composable
 fun CreateTask(
     viewModel: TaskViewModel,
-    snackbarHostState: SnackbarHostState,
-    onTaskCreated: () -> Unit = {}
 ) {
-
-    val context: Context = LocalContext.current
-
     val scrollState = rememberScrollState()
     val state = viewModel.state.collectAsState().value
 
@@ -145,22 +140,7 @@ fun CreateTask(
     }
 
 
-    LaunchedEffect(key1 = true) {
-        viewModel.eventFlow.collectLatest { event ->
-            when(event) {
-                is UiEvent.ShowSnackBar -> {
-                    snackbarHostState.showSnackbar(
-                        message = event.uiText.asString(context),
-                        duration = SnackbarDuration.Short
-                    )
-                }
-                is TaskEvent.TaskSaved -> {
-                    onTaskCreated()
-                }
-                else -> Unit
-            }
-        }
-    }
+
 
 
     Column(
