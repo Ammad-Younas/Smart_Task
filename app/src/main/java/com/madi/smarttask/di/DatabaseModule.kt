@@ -7,6 +7,7 @@ import com.madi.smarttask.core.data.repository.TaskRepositoryImpl
 import com.madi.smarttask.core.domain.repository.TaskRepository
 import com.madi.smarttask.core.domain.usecase.DeleteTask
 import com.madi.smarttask.core.domain.usecase.GetStats
+import com.madi.smarttask.core.domain.usecase.GetTaskById
 import com.madi.smarttask.core.domain.usecase.GetTasks
 import com.madi.smarttask.core.domain.usecase.InsertTask
 import com.madi.smarttask.core.domain.usecase.TaskUseCases
@@ -49,6 +50,7 @@ object DatabaseModule {
             updateTask = UpdateTask(repository),
             deleteTask = DeleteTask(repository),
             getStats = GetStats(repository),
+            getTaskById = GetTaskById(repository),
         )
     }
 }

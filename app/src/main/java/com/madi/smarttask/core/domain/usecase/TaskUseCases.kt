@@ -6,4 +6,5 @@ data class TaskUseCases(
     val updateTask: UpdateTask,
     val deleteTask: DeleteTask,
     val getStats: GetStats,
+    val getTaskById: GetTaskById,
 )

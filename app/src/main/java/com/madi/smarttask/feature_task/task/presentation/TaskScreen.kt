@@ -84,7 +84,10 @@ fun TaskScreen(
                 TaskTab.CREATE_TASK -> {
                     CreateTask(
                         viewModel = viewModel,
-                        snackbarHostState = snackbarHostState
+                        snackbarHostState = snackbarHostState,
+                        onTaskCreated = {
+                            selectedTab = TaskTab.DASHBOARD
+                        }
                     )
                 }
             }

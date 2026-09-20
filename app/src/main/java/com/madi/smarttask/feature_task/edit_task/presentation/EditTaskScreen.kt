@@ -31,6 +31,7 @@ import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,8 +49,11 @@ import com.madi.smarttask.core.presentation.component.SmartTaskTextField
 import com.madi.smarttask.core.presentation.component.SmartTaskToolBar
 import com.madi.smarttask.core.util.DateFormatUtil
 import com.madi.smarttask.core.util.FutureOrPresentSelectableDates
+import com.madi.smarttask.core.util.UiEvent
 import com.madi.smarttask.feature_task.edit_task.presentation.component.ActionButtons
 import com.madi.smarttask.feature_task.edit_task.presentation.component.StatusToggle
+import com.madi.smarttask.feature_task.task.presentation.TaskEvent
+import kotlinx.coroutines.flow.collectLatest
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,6 +64,15 @@ fun EditTaskScreen(
 ) {
     val scrollState = rememberScrollState()
     val state = viewModel.state.collectAsState().value
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                TaskEvent.TaskUpdated, TaskEvent.TaskDeleted, UiEvent.NavigateUp -> onNavigateUp()
+                else -> Unit
+            }
+        }
+    }
 
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }

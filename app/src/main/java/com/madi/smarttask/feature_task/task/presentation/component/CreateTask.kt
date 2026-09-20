@@ -68,6 +68,7 @@ import java.util.Calendar
 fun CreateTask(
     viewModel: TaskViewModel,
     snackbarHostState: SnackbarHostState,
+    onTaskCreated: () -> Unit = {}
 ) {
 
     val context: Context = LocalContext.current
@@ -152,6 +153,9 @@ fun CreateTask(
                         message = event.uiText.asString(context),
                         duration = SnackbarDuration.Short
                     )
+                }
+                is TaskEvent.TaskSaved -> {
+                    onTaskCreated()
                 }
                 else -> Unit
             }

@@ -100,7 +100,7 @@ fun Dashboard(
                     viewModel.onEvent(TaskEvent.ToggleTaskCompletion(task, isChecked))
                 },
                 onClick = {
-                    onNavigate(Screen.TaskDetailScreen.route)
+                    onNavigate(Screen.TaskDetailScreen.passTaskId(task.id))
                 }
             )
         }

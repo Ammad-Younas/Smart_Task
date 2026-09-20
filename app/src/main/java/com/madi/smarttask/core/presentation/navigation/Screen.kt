@@ -7,8 +7,12 @@ sealed class Screen(val route: String) {
     object TaskScreen : Screen("task_screen")
     object NotificationScreen : Screen("notification_screen")
     object SettingScreen : Screen("setting_screen")
-    object TaskDetailScreen : Screen("task_detail_screen")
-    object EditTaskScreen : Screen("edit_task_screen")
+    object TaskDetailScreen : Screen("task_detail_screen/{taskId}") {
+        fun passTaskId(taskId: Long) = "task_detail_screen/$taskId"
+    }
+    object EditTaskScreen : Screen("edit_task_screen/{taskId}") {
+        fun passTaskId(taskId: Long) = "edit_task_screen/$taskId"
+    }
     object AppearanceScreen : Screen("appearance_screen")
     object CategoriesScreen : Screen("categories_screen")
     object AboutScreen : Screen("about_screen")

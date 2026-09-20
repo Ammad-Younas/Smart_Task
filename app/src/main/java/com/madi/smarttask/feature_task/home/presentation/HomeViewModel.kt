@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.madi.smarttask.core.domain.model.Task
+import com.madi.smarttask.core.domain.usecase.TaskUseCases
 import com.madi.smarttask.core.util.DateFormatUtil
 import com.madi.smarttask.feature_name.domain.usecase.NameUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +18,8 @@ import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val nameUseCases: NameUseCases
+    private val nameUseCases: NameUseCases,
+    private val taskUseCases: TaskUseCases
 ) : ViewModel() {
 
     private val _isLoading = mutableStateOf(true)
@@ -25,14 +28,17 @@ class HomeViewModel @Inject constructor(
     private val _userName = mutableStateOf("")
     val userName: State<String> = _userName
 
-    private val _completedTaskCount = mutableIntStateOf(14)
+    private val _completedTaskCount = mutableIntStateOf(0)
     val completedTaskCount: State<Int> = _completedTaskCount
 
-    private val _totalTaskCount = mutableIntStateOf(20)
+    private val _totalTaskCount = mutableIntStateOf(0)
     val totalTaskCount: State<Int> = _totalTaskCount
 
-    private val _percentage = mutableIntStateOf(70)
+    private val _percentage = mutableIntStateOf(0)
     val percentage: State<Int> = _percentage
+
+    private val _upcomingTasks = mutableStateOf<List<Task>>(emptyList())
+    val upcomingTasks: State<List<Task>> = _upcomingTasks
 
     private val _days = mutableIntStateOf(3)
     val days: State<Int> = _days
@@ -61,6 +67,7 @@ class HomeViewModel @Inject constructor(
         checkUserName()
         initProgressData()
         startClockTicker()
+        observeTasks()
     }
 
     private fun checkUserName() {
@@ -74,11 +81,21 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun initProgressData() {
-        val completed = _completedTaskCount.intValue
-        val total = _totalTaskCount.intValue
-        _percentage.intValue = ((completed.toFloat() / total.toFloat()) * 100f).toInt().coerceIn(0, 100)
         _currentDay.value = DateFormatUtil.timestampToFormatedString(System.currentTimeMillis(), "EEEE")
         updateTimeRemaining()
+    }
+
+    private fun observeTasks() {
+        viewModelScope.launch {
+            taskUseCases.getTasks().collect { tasks ->
+                _upcomingTasks.value = tasks.take(3)
+                val total = tasks.size
+                val completed = tasks.count { it.isCompleted }
+                _totalTaskCount.intValue = total
+                _completedTaskCount.intValue = completed
+                _percentage.intValue = if (total > 0) ((completed.toFloat() / total.toFloat()) * 100f).toInt().coerceIn(0, 100) else 0
+            }
+        }
     }
 
     private fun startClockTicker() {

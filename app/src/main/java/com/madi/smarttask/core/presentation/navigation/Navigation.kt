@@ -3,8 +3,10 @@ package com.madi.smarttask.core.presentation.navigation
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.madi.smarttask.feature_name.presentation.NameScreen
 import com.madi.smarttask.feature_notification.presentation.NotificationScreen
 import com.madi.smarttask.feature_onboarding.presentation.OnboardingScreen
@@ -96,7 +98,13 @@ fun Navigation(
             )
         }
         composable(
-            route = Screen.TaskDetailScreen.route
+            route = Screen.TaskDetailScreen.route,
+            arguments = listOf(
+                navArgument("taskId") {
+                    type = NavType.LongType
+                    defaultValue = -1L
+                }
+            )
         ) {
             TaskDetailScreen(
                 onNavigateUp = navController::navigateUp,
@@ -104,7 +112,13 @@ fun Navigation(
             )
         }
         composable(
-            route = Screen.EditTaskScreen.route
+            route = Screen.EditTaskScreen.route,
+            arguments = listOf(
+                navArgument("taskId") {
+                    type = NavType.LongType
+                    defaultValue = -1L
+                }
+            )
         ) {
             EditTaskScreen(
                 onNavigateUp = navController::navigateUp

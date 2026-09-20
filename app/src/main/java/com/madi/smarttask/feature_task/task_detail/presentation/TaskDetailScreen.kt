@@ -17,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,12 +25,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.madi.smarttask.R
-import com.madi.smarttask.core.presentation.component.SmartTaskToolBar
-import com.madi.smarttask.core.presentation.ui.theme.NavActionIconSize
-import com.madi.smarttask.core.presentation.navigation.Screen
 import com.madi.smarttask.core.presentation.component.DeleteTaskButton
+import com.madi.smarttask.core.presentation.component.SmartTaskToolBar
+import com.madi.smarttask.core.presentation.navigation.Screen
+import com.madi.smarttask.core.presentation.ui.theme.NavActionIconSize
+import com.madi.smarttask.core.util.UiEvent
 import com.madi.smarttask.feature_task.task_detail.presentation.component.TaskDetailHeader
 import com.madi.smarttask.feature_task.task_detail.presentation.component.TaskMetadataCard
+import com.madi.smarttask.feature_task.task.presentation.TaskEvent
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun TaskDetailScreen(
@@ -39,6 +43,15 @@ fun TaskDetailScreen(
 ) {
     val scrollState = rememberScrollState()
     val state = viewModel.state.collectAsState().value
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                TaskEvent.TaskDeleted, UiEvent.NavigateUp -> onNavigateUp()
+                else -> Unit
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -57,7 +70,7 @@ fun TaskDetailScreen(
                 )
             },
             navActions = {
-                IconButton(onClick = { onEditClick(Screen.EditTaskScreen.route) }) {
+                IconButton(onClick = { onEditClick(Screen.EditTaskScreen.passTaskId(state.taskDetail.task.id)) }) {
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = stringResource(R.string.edit),

@@ -28,7 +28,7 @@ class TaskViewModel @Inject constructor(
     private val _state = MutableStateFlow(TaskState())
     val state: StateFlow<TaskState> = _state.asStateFlow()
 
-    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    private val _eventFlow = MutableSharedFlow<Any>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
@@ -103,6 +103,7 @@ class TaskViewModel @Inject constructor(
             is TaskEvent.SaveTask -> {
                 saveTask()
             }
+            else -> {}
         }
     }
 
@@ -132,6 +133,7 @@ class TaskViewModel @Inject constructor(
                     )
                 }
                 _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.task_saved)))
+                _eventFlow.emit(TaskEvent.TaskSaved)
             } catch (_: Exception) {
                 _eventFlow.emit(UiEvent.ShowSnackBar(UiText.unknownError()))
             }

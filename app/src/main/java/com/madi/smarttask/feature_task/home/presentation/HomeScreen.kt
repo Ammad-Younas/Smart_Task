@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -24,9 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.madi.smarttask.R
-import com.madi.smarttask.core.domain.model.Category
-import com.madi.smarttask.core.domain.model.Priority
-import com.madi.smarttask.core.domain.model.Task
 import com.madi.smarttask.core.presentation.component.TaskItem
 import com.madi.smarttask.core.presentation.navigation.Screen
 import com.madi.smarttask.core.presentation.ui.theme.SpaceLarge
@@ -40,6 +38,8 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigate: (String) -> Unit = {}
 ) {
+    val upcomingTasks = viewModel.upcomingTasks.value
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -68,7 +68,7 @@ fun HomeScreen(
                 )
                 TextButton(
                     onClick = {
-
+                        onNavigate(Screen.TaskScreen.route)
                     }
                 ) {
                     Text(
@@ -80,15 +80,10 @@ fun HomeScreen(
             }
             Spacer(Modifier.height(SpaceSmall))
         }
-        items(3) {
+        items(upcomingTasks) { task ->
             TaskItem(
-                task = Task(
-                    title = "Task 1",
-                    category = Category.WORK,
-                    priority = Priority.HIGH,
-                    dueDate = System.currentTimeMillis()
-                ),
-                onClick = { onNavigate(Screen.TaskDetailScreen.route) }
+                task = task,
+                onClick = { onNavigate(Screen.TaskDetailScreen.passTaskId(task.id)) }
             )
         }
     }

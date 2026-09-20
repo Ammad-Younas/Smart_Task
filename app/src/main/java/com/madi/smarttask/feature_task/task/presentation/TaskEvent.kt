@@ -13,4 +13,8 @@ sealed class TaskEvent {
     data class ToggleTaskCompletion(val task: Task, val isCompleted: Boolean) : TaskEvent()
     data class DeleteTask(val id: Long) : TaskEvent()
     object SaveTask : TaskEvent()
+
+    object TaskSaved : TaskEvent()
+    object TaskUpdated : TaskEvent()
+    object TaskDeleted : TaskEvent()
 }

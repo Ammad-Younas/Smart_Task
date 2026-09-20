@@ -28,6 +28,10 @@ class TaskRepositoryImpl (
             .map { entity -> entity?.toStats() ?: Stats(0, 0, 0, 0) }
     }
 
+    override suspend fun getTaskById(id: Long): Task? {
+        return dao.getTaskById(id)?.toTask()
+    }
+
     override suspend fun insertTask(task: Task) {
         dao.insertTask(TaskEntity.fromTask(task))
         recalculateAndUpdateStats()

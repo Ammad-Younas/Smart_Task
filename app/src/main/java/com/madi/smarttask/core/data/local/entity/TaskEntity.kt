@@ -21,6 +21,7 @@ data class TaskEntity(
 ) {
     fun toTask(): Task {
         return Task(
+            id = id,
             title = title,
             description = description,
             isCompleted = isComplete,
@@ -33,6 +34,7 @@ data class TaskEntity(
     companion object {
         fun fromTask(task: Task) : TaskEntity {
             return TaskEntity(
+                id = task.id,
                 title = task.title,
                 description = task.description,
                 isComplete = task.isCompleted,
@@ -43,4 +45,3 @@ data class TaskEntity(
         }
     }
 }
-
