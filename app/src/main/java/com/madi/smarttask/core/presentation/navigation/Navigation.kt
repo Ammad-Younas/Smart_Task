@@ -1,5 +1,6 @@
 package com.madi.smarttask.core.presentation.navigation
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -19,6 +20,7 @@ import com.madi.smarttask.feature_task.task_detail.presentation.TaskDetailScreen
 @Composable
 fun Navigation(
     navController: NavHostController,
+    snackbarHostState: SnackbarHostState,
     startDestination: String
 ) {
     NavHost(
@@ -46,7 +48,8 @@ fun Navigation(
             route = Screen.TaskScreen.route
         ) {
             TaskScreen(
-                onNavigate = navController::navigate
+                onNavigate = navController::navigate,
+                snackbarHostState = snackbarHostState
             )
         }
         composable(

@@ -76,7 +76,8 @@ class MainActivity : ComponentActivity() {
                     ) {
                         Navigation(
                             navController = navController,
-                            startDestination = viewModel.startDestination.value
+                            startDestination = viewModel.startDestination.value,
+                            snackbarHostState = snackbarHostState
                         )
                     }
                 }

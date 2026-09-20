@@ -61,7 +61,7 @@ fun TaskDetailScreen(
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = stringResource(R.string.edit),
-                        modifier = Modifier.size(NavActionIconSize),
+                        modifier = Modifier.size(NavActionIconSize - 5.dp),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }

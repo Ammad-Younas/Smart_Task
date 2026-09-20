@@ -85,4 +85,6 @@
     <string name="system_default">System Default</string>
     <string name="light">Light</string>
     <string name="dark">Dark</string>
+    <string name="error_title_empty">Title can\'t be empty</string>
+    <string name="task_saved">Task saved successfully</string>
 </resources>
