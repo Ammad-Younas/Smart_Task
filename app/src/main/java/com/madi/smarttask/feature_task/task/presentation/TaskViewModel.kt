@@ -19,10 +19,12 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.madi.smarttask.core.domain.repository.CategoryRepository
 
 @HiltViewModel
 class TaskViewModel @Inject constructor(
     private val taskUseCases: TaskUseCases,
+    private val categoryRepository: CategoryRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TaskState())
@@ -34,6 +36,13 @@ class TaskViewModel @Inject constructor(
     init {
         getTasks()
         getStats()
+        getCategories()
+    }
+
+    private fun getCategories() {
+        categoryRepository.getCategories().onEach { categories ->
+            _state.update { it.copy(categories = categories) }
+        }.launchIn(viewModelScope)
     }
 
     private fun getTasks() {

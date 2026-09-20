@@ -2,6 +2,7 @@ package com.madi.smarttask.core.presentation.navigation
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -21,19 +22,18 @@ import com.madi.smarttask.feature_task.edit_task.presentation.EditTaskScreen
 import com.madi.smarttask.feature_task.home.presentation.HomeScreen
 import com.madi.smarttask.feature_task.task.presentation.TaskScreen
 import com.madi.smarttask.feature_task.task_detail.presentation.TaskDetailScreen
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun Navigation(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState,
-    startDestination: String,
-    scope: CoroutineScope
+    startDestination: String
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val onShowSnackbar: (UiText) -> Unit = { uiText ->
-        scope.launch {
+        coroutineScope.launch {
             snackbarHostState.showSnackbar(uiText.asString(context))
         }
     }
@@ -65,7 +65,7 @@ fun Navigation(
             TaskScreen(
                 onNavigate = navController::navigate,
                 snackbarHostState = snackbarHostState,
-                scope = scope
+                scope = coroutineScope
             )
         }
         composable(

@@ -7,13 +7,14 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -22,8 +23,8 @@ import com.madi.smarttask.core.presentation.component.SmartTaskScaffold
 import com.madi.smarttask.core.presentation.navigation.Navigation
 import com.madi.smarttask.core.presentation.navigation.Screen
 import com.madi.smarttask.core.presentation.ui.theme.SmartTaskTheme
+import com.madi.smarttask.feature_setting.domain.util.ThemeMode
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -42,12 +43,18 @@ class MainActivity : ComponentActivity() {
             )
         )
         setContent {
-            SmartTaskTheme {
+            val themeMode by viewModel.themeMode.collectAsState()
+            val darkTheme = when (themeMode) {
+                ThemeMode.SYSTEM_DEFAULT -> isSystemInDarkTheme()
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+            }
+
+            SmartTaskTheme(darkTheme = darkTheme) {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
                 val snackbarHostState = remember { SnackbarHostState() }
-                val coroutineScope : CoroutineScope = rememberCoroutineScope()
 
                 val bottomNavRoutes = listOf(
                     Screen.HomeScreen.route,
@@ -66,8 +73,8 @@ class MainActivity : ComponentActivity() {
                         snackbarHostState = snackbarHostState,
                         onNavigate = { route ->
                             if (currentRoute != route) {
-                                if (route == Screen.HomeScreen.route && navController.popBackStack(Screen.HomeScreen.route, false)) {
-                                } else {
+                                val isPoppedToHome = route == Screen.HomeScreen.route && navController.popBackStack(Screen.HomeScreen.route, false)
+                                if (!isPoppedToHome) {
                                     navController.navigate(route) {
                                         popUpTo(Screen.HomeScreen.route) {
                                             saveState = true
@@ -82,8 +89,7 @@ class MainActivity : ComponentActivity() {
                         Navigation(
                             navController = navController,
                             startDestination = viewModel.startDestination.value,
-                            snackbarHostState = snackbarHostState,
-                            scope = coroutineScope
+                            snackbarHostState = snackbarHostState
                         )
                     }
                 }

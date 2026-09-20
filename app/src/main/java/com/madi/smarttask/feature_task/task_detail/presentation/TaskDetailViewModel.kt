@@ -3,9 +3,12 @@ package com.madi.smarttask.feature_task.task_detail.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.madi.smarttask.R
 import com.madi.smarttask.core.domain.model.TaskDetail
 import com.madi.smarttask.core.domain.model.TaskStatus
 import com.madi.smarttask.core.domain.usecase.TaskUseCases
+import com.madi.smarttask.core.util.UiEvent
+import com.madi.smarttask.core.util.UiText
 import com.madi.smarttask.feature_task.task.presentation.TaskEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -63,6 +66,7 @@ class TaskDetailViewModel @Inject constructor(
                     if (id != 0L) {
                         taskUseCases.deleteTask(id)
                     }
+                    _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.task_deleted)))
                     _eventFlow.emit(TaskEvent.TaskDeleted)
                 }
             }

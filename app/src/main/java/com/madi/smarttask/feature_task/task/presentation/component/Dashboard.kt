@@ -36,26 +36,41 @@ fun Dashboard(
     onNavigate: (String) -> Unit = {},
     viewModel: TaskViewModel,
 ) {
-    var selectedCategory by remember { mutableStateOf<Category?>(null) }
+    val state by viewModel.state.collectAsState()
+
+    var selectedCategoryName by remember { mutableStateOf<String?>(null) }
     var selectedStatus by remember { mutableStateOf<TaskStatus?>(TaskStatus.TOTAL) }
     var selectedPriority by remember { mutableStateOf<Priority?>(null) }
 
-    val state by viewModel.state.collectAsState()
-
-    val filteredTasks = remember(state.tasks, selectedCategory, selectedStatus, selectedPriority) {
-        state.tasks.filter { task ->
-            val currentTime = System.currentTimeMillis()
-            val matchesCategory = selectedCategory == null || task.category == selectedCategory
-            val matchesPriority = selectedPriority == null || task.priority == selectedPriority
-            val matchesStatus = when (selectedStatus) {
-                null, TaskStatus.TOTAL -> true
-                TaskStatus.COMPLETED -> task.isCompleted
-                TaskStatus.PENDING -> !task.isCompleted && (task.dueDate == 0L || task.dueDate >= currentTime)
-                TaskStatus.OVERDUE -> !task.isCompleted && task.dueDate in 1..<currentTime
+    val categoriesList = remember(state.categories) {
+        if (state.categories.isNotEmpty()) {
+            state.categories.map { it.name }
+        } else {
+            Category.entries.map {
+                it.name.lowercase().replaceFirstChar { char -> char.uppercase() }
             }
-            matchesCategory && matchesPriority && matchesStatus
         }
     }
+
+    val filteredTasks =
+        remember(state.tasks, selectedCategoryName, selectedStatus, selectedPriority) {
+            state.tasks.filter { task ->
+                val currentTime = System.currentTimeMillis()
+                val matchesCategory = selectedCategoryName == null || task.category.name.equals(
+                    selectedCategoryName,
+                    ignoreCase = true
+                )
+                val matchesPriority = selectedPriority == null || task.priority == selectedPriority
+                val matchesStatus = when (selectedStatus) {
+                    null,
+                    TaskStatus.TOTAL -> true
+                    TaskStatus.COMPLETED -> task.isCompleted
+                    TaskStatus.PENDING -> !task.isCompleted && (task.dueDate == 0L || task.dueDate >= currentTime)
+                    TaskStatus.OVERDUE -> !task.isCompleted && task.dueDate in 1..<currentTime
+                }
+                matchesCategory && matchesPriority && matchesStatus
+            }
+        }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -66,19 +81,28 @@ fun Dashboard(
                 StatsCard(stats = stats)
                 Spacer(Modifier.height(SpaceSmall))
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = SpaceSmall),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = SpaceSmall),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     LazyRow(
                         modifier = Modifier.weight(1f),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        items(Category.entries.toTypedArray()) { category ->
+                        items(categoriesList) { categoryName ->
                             CategoryChip(
-                                category = category,
-                                isSelected = selectedCategory == category,
-                                onCategorySelected = {
-                                    selectedCategory = if (selectedCategory == it) null else it
+                                categoryName = categoryName,
+                                isSelected = selectedCategoryName.equals(
+                                    categoryName,
+                                    ignoreCase = true
+                                ),
+                                onCategorySelected = { name ->
+                                    selectedCategoryName = if (selectedCategoryName.equals(
+                                            name,
+                                            ignoreCase = true
+                                        )
+                                    ) null else name
                                 },
                             )
                         }

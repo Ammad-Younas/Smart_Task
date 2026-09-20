@@ -13,24 +13,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.madi.smarttask.R
 import com.madi.smarttask.core.presentation.component.SmartTaskToolBar
-
 import com.madi.smarttask.feature_setting.domain.util.ThemeMode
 
 @Composable
 fun AppearanceScreen(
-    onNavigateUp: () -> Unit = {}
+    onNavigateUp: () -> Unit = {},
+    viewModel: AppearanceViewModel = hiltViewModel()
 ) {
-    var selectedTheme by remember { mutableStateOf(ThemeMode.SYSTEM_DEFAULT) }
+    val selectedTheme by viewModel.selectedTheme.collectAsState()
     val themes = ThemeMode.entries
 
     Column(
@@ -50,7 +49,7 @@ fun AppearanceScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { selectedTheme = theme }
+                        .clickable { viewModel.setTheme(theme) }
                         .padding(horizontal = 16.dp, vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -62,7 +61,7 @@ fun AppearanceScreen(
                     Spacer(modifier = Modifier.width(16.dp))
                     RadioButton(
                         selected = selectedTheme == theme,
-                        onClick = { selectedTheme = theme }
+                        onClick = { viewModel.setTheme(theme) }
                     )
                 }
                 HorizontalDivider(

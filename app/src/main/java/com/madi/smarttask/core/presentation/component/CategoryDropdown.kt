@@ -27,16 +27,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.madi.smarttask.R
+import com.madi.smarttask.core.data.local.entity.CategoryEntity
 import com.madi.smarttask.core.domain.model.Category
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryDropdown(
     selectedCategory: Category,
-    onCategorySelected: (Category) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    categories: List<CategoryEntity> = emptyList(),
+    onCategorySelected: (Category) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+
+    val displayCategoryNames = remember(categories) {
+        if (categories.isNotEmpty()) {
+            categories.map { it.name }
+        } else {
+            Category.entries.map { it.name.lowercase().replaceFirstChar { char -> char.uppercase() } }
+        }
+    }
 
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
@@ -79,13 +89,14 @@ fun CategoryDropdown(
                 containerColor = MaterialTheme.colorScheme.background,
                 tonalElevation = 8.dp
             ) {
-                Category.entries.forEach { category ->
+                displayCategoryNames.forEach { name ->
                     DropdownMenuItem(
                         text = {
-                            Text(text = category.name.lowercase().replaceFirstChar { it.uppercase() })
+                            Text(text = name)
                         },
                         onClick = {
-                            onCategorySelected(category)
+                            val catEnum = Category.entries.find { it.name.equals(name, ignoreCase = true) } ?: Category.WORK
+                            onCategorySelected(catEnum)
                             expanded = false
                         }
                     )

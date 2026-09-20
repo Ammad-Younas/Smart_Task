@@ -1,5 +1,6 @@
 package com.madi.smarttask.feature_task.edit_task.presentation
 
+import com.madi.smarttask.core.data.local.entity.CategoryEntity
 import com.madi.smarttask.core.domain.model.Category
 import com.madi.smarttask.core.domain.model.Priority
 import com.madi.smarttask.core.domain.states.SmartTaskTextFieldState
@@ -13,4 +14,5 @@ data class EditTaskState(
     val isCompleted: Boolean = false,
     val dueDate: Long = 0L,
     val isLoading: Boolean = false,
+    val categories: List<CategoryEntity> = emptyList(),
 )

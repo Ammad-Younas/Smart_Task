@@ -1,37 +1,21 @@
 package com.madi.smarttask.feature_task.edit_task.presentation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.outlined.CalendarToday
-import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,19 +30,20 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.madi.smarttask.R
 import com.madi.smarttask.core.presentation.component.CategoryDropdown
+import com.madi.smarttask.core.presentation.component.DueDateTimeSelectionRow
 import com.madi.smarttask.core.presentation.component.PrioritySelectionRow
-import com.madi.smarttask.core.presentation.component.SmartTaskTextField
 import com.madi.smarttask.core.presentation.component.SmartTaskToolBar
-import com.madi.smarttask.core.util.DateFormatUtil
-import com.madi.smarttask.core.util.FutureOrPresentSelectableDates
+import com.madi.smarttask.core.presentation.component.TaskDateTimePickerDialogs
+import com.madi.smarttask.core.presentation.component.TaskDescriptionInput
+import com.madi.smarttask.core.presentation.component.TaskTitleInput
 import com.madi.smarttask.core.util.UiEvent
 import com.madi.smarttask.core.util.UiText
 import com.madi.smarttask.feature_task.edit_task.presentation.component.ActionButtons
 import com.madi.smarttask.feature_task.edit_task.presentation.component.StatusToggle
+import com.madi.smarttask.feature_task.task.presentation.TaskError
 import com.madi.smarttask.feature_task.task.presentation.TaskEvent
-import java.util.Calendar
+import com.madi.smarttask.feature_task.task.presentation.asString
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditTaskScreen(
     onNavigateUp: () -> Unit = {},
@@ -86,19 +71,6 @@ fun EditTaskScreen(
 
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
-
-    val initialDateMillis = state.dueDate.takeIf { it > 0 } ?: System.currentTimeMillis()
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = initialDateMillis,
-        selectableDates = FutureOrPresentSelectableDates
-    )
-    
-    val cal = Calendar.getInstance().apply { timeInMillis = initialDateMillis }
-    val timePickerState = rememberTimePickerState(
-        initialHour = cal.get(Calendar.HOUR_OF_DAY),
-        initialMinute = cal.get(Calendar.MINUTE),
-        is24Hour = false
-    )
 
     if (showDeleteConfirmationDialog) {
         AlertDialog(
@@ -137,57 +109,14 @@ fun EditTaskScreen(
         )
     }
 
-    if (showDatePicker) {
-        DatePickerDialog(
-            onDismissRequest = { showDatePicker = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    showDatePicker = false
-                    datePickerState.selectedDateMillis?.let {
-                        val newCal = Calendar.getInstance().apply { timeInMillis = it }
-                        val currentCal = Calendar.getInstance().apply { timeInMillis = state.dueDate.takeIf { d -> d > 0 } ?: System.currentTimeMillis() }
-                        newCal.set(Calendar.HOUR_OF_DAY, currentCal.get(Calendar.HOUR_OF_DAY))
-                        newCal.set(Calendar.MINUTE, currentCal.get(Calendar.MINUTE))
-                        viewModel.onEvent(EditTaskEvent.SelectedDueDate(newCal.timeInMillis))
-                    }
-                }) {
-                    Text(stringResource(R.string.save))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) {
-                    Text(stringResource(R.string.skip))
-                }
-            }
-        ) {
-            DatePicker(state = datePickerState)
-        }
-    }
-
-    if (showTimePicker) {
-        AlertDialog(
-            onDismissRequest = { showTimePicker = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    showTimePicker = false
-                    val newCal = Calendar.getInstance().apply { timeInMillis = state.dueDate.takeIf { it > 0 } ?: System.currentTimeMillis() }
-                    newCal.set(Calendar.HOUR_OF_DAY, timePickerState.hour)
-                    newCal.set(Calendar.MINUTE, timePickerState.minute)
-                    viewModel.onEvent(EditTaskEvent.SelectedDueDate(newCal.timeInMillis))
-                }) {
-                    Text(stringResource(R.string.save))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showTimePicker = false }) {
-                    Text(stringResource(R.string.skip))
-                }
-            },
-            text = {
-                TimePicker(state = timePickerState)
-            }
-        )
-    }
+    TaskDateTimePickerDialogs(
+        dueDate = state.dueDate,
+        showDatePicker = showDatePicker,
+        showTimePicker = showTimePicker,
+        onDismissDatePicker = { showDatePicker = false },
+        onDismissTimePicker = { showTimePicker = false },
+        onDueDateSelected = { viewModel.onEvent(EditTaskEvent.SelectedDueDate(it)) }
+    )
 
     Column(
         modifier = Modifier
@@ -215,46 +144,16 @@ fun EditTaskScreen(
                 .imePadding(),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            Column {
-                Text(
-                    text = stringResource(R.string.task_title),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                SmartTaskTextField(
-                    text = state.title.text,
-                    onValueChange = { viewModel.onEvent(EditTaskEvent.EnteredTitle(it)) },
-                    hint = stringResource(R.string.task_title),
-                    trailingIcon = {
-                        if (state.title.text.isNotEmpty()) {
-                            IconButton(onClick = { viewModel.onEvent(EditTaskEvent.EnteredTitle("")) }) {
-                                Icon(
-                                    imageVector = Icons.Default.Clear,
-                                    contentDescription = stringResource(R.string.clear_title)
-                                )
-                            }
-                        }
-                    }
-                )
-            }
+            TaskTitleInput(
+                text = state.title.text,
+                error = (state.title.error as? TaskError)?.asString() ?: "",
+                onValueChange = { viewModel.onEvent(EditTaskEvent.EnteredTitle(it)) }
+            )
 
-            Column {
-                Text(
-                    text = stringResource(R.string.description),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                SmartTaskTextField(
-                    text = state.description.text,
-                    onValueChange = { viewModel.onEvent(EditTaskEvent.EnteredDescription(it)) },
-                    hint = stringResource(R.string.description),
-                    singleLine = false,
-                    minLines = 4,
-                    maxLines = 6
-                )
-            }
+            TaskDescriptionInput(
+                text = state.description.text,
+                onValueChange = { viewModel.onEvent(EditTaskEvent.EnteredDescription(it)) }
+            )
 
             PrioritySelectionRow(
                 selectedPriority = state.priority,
@@ -263,52 +162,15 @@ fun EditTaskScreen(
 
             CategoryDropdown(
                 selectedCategory = state.category,
+                categories = state.categories,
                 onCategorySelected = { viewModel.onEvent(EditTaskEvent.SelectedCategory(it)) }
             )
 
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.due_date),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Box {
-                        SmartTaskTextField(
-                            text = DateFormatUtil.timestampToFormatedString(state.dueDate.takeIf { it > 0 } ?: System.currentTimeMillis(), "MMM dd, yyyy"),
-                            onValueChange = {},
-                            leadingIcon = Icons.Outlined.CalendarToday
-                        )
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clickable { showDatePicker = true }
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.due_time),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Box {
-                        SmartTaskTextField(
-                            text = DateFormatUtil.timestampToFormatedString(state.dueDate.takeIf { it > 0 } ?: System.currentTimeMillis(), "hh:mm a"),
-                            onValueChange = {},
-                            leadingIcon = Icons.Outlined.Schedule
-                        )
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clickable { showTimePicker = true }
-                        )
-                    }
-                }
-            }
+            DueDateTimeSelectionRow(
+                dueDate = state.dueDate,
+                onOpenDatePicker = { showDatePicker = true },
+                onOpenTimePicker = { showTimePicker = true }
+            )
 
             StatusToggle(
                 isCompleted = state.isCompleted,

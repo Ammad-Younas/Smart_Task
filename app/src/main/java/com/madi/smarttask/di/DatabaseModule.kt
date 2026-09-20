@@ -3,7 +3,9 @@ package com.madi.smarttask.di
 import android.content.Context
 import androidx.room.Room
 import com.madi.smarttask.core.data.local.SmartTaskDatabase
+import com.madi.smarttask.core.data.repository.CategoryRepositoryImpl
 import com.madi.smarttask.core.data.repository.TaskRepositoryImpl
+import com.madi.smarttask.core.domain.repository.CategoryRepository
 import com.madi.smarttask.core.domain.repository.TaskRepository
 import com.madi.smarttask.core.domain.usecase.DeleteTask
 import com.madi.smarttask.core.domain.usecase.GetStats
@@ -39,6 +41,12 @@ object DatabaseModule {
     @Singleton
     fun provideTaskRepository(db: SmartTaskDatabase): TaskRepository {
         return TaskRepositoryImpl(db.taskDao, db.taskStatsDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCategoryRepository(db: SmartTaskDatabase): CategoryRepository {
+        return CategoryRepositoryImpl(db.categoryDao)
     }
 
     @Provides

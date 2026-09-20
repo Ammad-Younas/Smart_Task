@@ -21,10 +21,14 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.madi.smarttask.core.domain.repository.CategoryRepository
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @HiltViewModel
 class EditTaskViewModel @Inject constructor(
     private val taskUseCases: TaskUseCases,
+    categoryRepository: CategoryRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -35,6 +39,10 @@ class EditTaskViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
+        categoryRepository.getCategories().onEach { categories ->
+            _state.update { it.copy(categories = categories) }
+        }.launchIn(viewModelScope)
+
         val taskId = savedStateHandle.get<Long>("taskId") ?: -1L
         if (taskId != -1L) {
             viewModelScope.launch {

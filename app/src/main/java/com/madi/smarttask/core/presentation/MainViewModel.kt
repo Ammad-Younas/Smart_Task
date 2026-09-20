@@ -4,25 +4,28 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.madi.smarttask.core.data.preferences.SettingsDataStore
 import com.madi.smarttask.core.presentation.navigation.Screen
+import com.madi.smarttask.feature_name.domain.usecase.NameUseCases
 import com.madi.smarttask.feature_onboarding.domain.usecase.OnboardingUseCases
+import com.madi.smarttask.feature_setting.domain.util.ThemeMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
-
-import com.madi.smarttask.feature_name.domain.usecase.NameUseCases
-import kotlinx.coroutines.flow.combine
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     onboardingUseCases: OnboardingUseCases,
-    nameUseCases: NameUseCases
+    nameUseCases: NameUseCases,
+    settingsDataStore: SettingsDataStore
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(true)
@@ -30,6 +33,13 @@ class MainViewModel @Inject constructor(
 
     private val _startDestination = mutableStateOf(Screen.OnBoardingScreen.route)
     val startDestination: State<String> = _startDestination
+
+    val themeMode: StateFlow<ThemeMode> = settingsDataStore.themeMode
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = ThemeMode.SYSTEM_DEFAULT
+        )
 
     init {
         combine(

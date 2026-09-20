@@ -8,21 +8,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.font.FontWeight
-import com.madi.smarttask.core.domain.model.Category
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryChip(
-    category: Category,
+    categoryName: String,
     isSelected: Boolean,
-    onCategorySelected: (Category) -> Unit,
+    onCategorySelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     FilterChip(
         selected = isSelected,
-        onClick = { onCategorySelected(category) },
+        onClick = { onCategorySelected(categoryName) },
         shape = CircleShape,
         colors = FilterChipDefaults.filterChipColors(
             selectedContainerColor = MaterialTheme.colorScheme.primary,
@@ -31,7 +29,7 @@ fun CategoryChip(
         ),
         label = { 
             Text(
-                text = category.name.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(LocalLocale.current.platformLocale) else it.toString() },
+                text = categoryName,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
             ) 
