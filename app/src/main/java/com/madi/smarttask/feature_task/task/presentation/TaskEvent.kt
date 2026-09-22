@@ -12,6 +12,8 @@ sealed class TaskEvent {
     data class SelectedDueDate(val dateMillis: Long) : TaskEvent()
     data class ToggleTaskCompletion(val task: Task, val isCompleted: Boolean) : TaskEvent()
     data class DeleteTask(val id: Long) : TaskEvent()
+    data class EnteredSearchQuery(val query: String) : TaskEvent()
+    object ToggleSearch : TaskEvent()
     object SaveTask : TaskEvent()
 
     object TaskSaved : TaskEvent()

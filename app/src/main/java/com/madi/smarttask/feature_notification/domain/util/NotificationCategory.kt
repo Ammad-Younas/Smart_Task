@@ -4,6 +4,5 @@ enum class NotificationCategory {
     REMINDER,
     OVERDUE,
     COMPLETED,
-    UPDATE,
     DEADLINE
 }

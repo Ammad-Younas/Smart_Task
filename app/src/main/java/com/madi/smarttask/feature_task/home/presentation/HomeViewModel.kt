@@ -28,6 +28,7 @@ class HomeViewModel @Inject constructor(
     val state: StateFlow<HomeState> = _state.asStateFlow()
 
     private var targetTimeMillis: Long = 0L
+    private var cachedTasks: List<Task> = emptyList()
 
     init {
         checkUserName()
@@ -54,20 +55,10 @@ class HomeViewModel @Inject constructor(
     private fun observeTasks() {
         viewModelScope.launch {
             taskUseCases.getTasks().collect { tasks ->
+                cachedTasks = tasks
                 val total = tasks.size
                 val completed = tasks.count { it.isCompleted }
                 val percentage = if (total > 0) ((completed.toFloat() / total.toFloat()) * 100f).toInt().coerceIn(0, 100) else 0
-
-                val sortedTasks = tasks.sortedWith(
-                    compareByDescending<Task> { it.priority.ordinal }
-                        .thenByDescending { it.dueDate }
-                )
-                val urgentTasks = sortedTasks.filter { it.priority == Priority.URGENT }
-                val upcomingTasks = if (urgentTasks.size >= 3) {
-                    urgentTasks.sortedByDescending { it.dueDate }
-                } else {
-                    sortedTasks.take(3)
-                }
 
                 val nearestUpcomingTask = tasks
                     .filter { !it.isCompleted && it.dueDate > System.currentTimeMillis() }
@@ -75,15 +66,51 @@ class HomeViewModel @Inject constructor(
 
                 targetTimeMillis = nearestUpcomingTask?.dueDate ?: 0L
 
-                _state.update {
-                    it.copy(
-                        percentage = percentage,
-                        upcomingTasks = upcomingTasks
-                    )
-                }
+                _state.update { it.copy(percentage = percentage) }
+                filterAndUpdateUpcomingTasks()
                 updateTimeRemaining()
             }
         }
+    }
+
+    fun toggleSearch(isSearching: Boolean) {
+        _state.update {
+            it.copy(
+                isSearching = isSearching,
+                searchQuery = if (!isSearching) "" else it.searchQuery
+            )
+        }
+        filterAndUpdateUpcomingTasks()
+    }
+
+    fun onSearchQueryChange(query: String) {
+        _state.update { it.copy(searchQuery = query) }
+        filterAndUpdateUpcomingTasks()
+    }
+
+    private fun filterAndUpdateUpcomingTasks() {
+        val query = state.value.searchQuery.trim()
+        val tasks = cachedTasks
+
+        val filtered = if (query.isNotBlank()) {
+            tasks.filter {
+                it.title.contains(query, ignoreCase = true) ||
+                (it.description?.contains(query, ignoreCase = true) == true)
+            }
+        } else {
+            val sortedTasks = tasks.sortedWith(
+                compareByDescending<Task> { it.priority.ordinal }
+                    .thenByDescending { it.dueDate }
+            )
+            val urgentTasks = sortedTasks.filter { it.priority == Priority.URGENT }
+            if (urgentTasks.size >= 3) {
+                urgentTasks.sortedByDescending { it.dueDate }
+            } else {
+                sortedTasks.take(3)
+            }
+        }
+
+        _state.update { it.copy(upcomingTasks = filtered) }
     }
 
     fun toggleTaskCompletion(task: Task, isCompleted: Boolean) {

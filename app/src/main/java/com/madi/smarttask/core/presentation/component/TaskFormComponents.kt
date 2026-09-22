@@ -73,7 +73,8 @@ fun TaskDescriptionInput(
             hint = stringResource(R.string.description),
             singleLine = false,
             minLines = 4,
-            maxLines = 6
+            maxLines = 6,
+            maxLength = 100
         )
     }
 }
@@ -167,6 +168,8 @@ fun TaskDateTimePickerDialogs(
                         val currentCal = Calendar.getInstance().apply { timeInMillis = dueDate.takeIf { d -> d > 0 } ?: System.currentTimeMillis() }
                         newCal.set(Calendar.HOUR_OF_DAY, currentCal.get(Calendar.HOUR_OF_DAY))
                         newCal.set(Calendar.MINUTE, currentCal.get(Calendar.MINUTE))
+                        newCal.set(Calendar.SECOND, 0)
+                        newCal.set(Calendar.MILLISECOND, 0)
                         onDueDateSelected(newCal.timeInMillis)
                     }
                 }) {
@@ -192,6 +195,8 @@ fun TaskDateTimePickerDialogs(
                     val newCal = Calendar.getInstance().apply { timeInMillis = dueDate.takeIf { it > 0 } ?: System.currentTimeMillis() }
                     newCal.set(Calendar.HOUR_OF_DAY, timePickerState.hour)
                     newCal.set(Calendar.MINUTE, timePickerState.minute)
+                    newCal.set(Calendar.SECOND, 0)
+                    newCal.set(Calendar.MILLISECOND, 0)
                     onDueDateSelected(newCal.timeInMillis)
                 }) {
                     Text(stringResource(R.string.save))

@@ -17,4 +17,6 @@ data class TaskState(
     val tasks: List<Task> = emptyList(),
     val categories: List<CategoryEntity> = emptyList(),
     val stats: Stats = Stats(0, 0, 0, 0),
+    val searchQuery: String = "",
+    val isSearchOpen: Boolean = false,
 )

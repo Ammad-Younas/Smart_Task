@@ -13,4 +13,6 @@ data class HomeState(
     val nextTaskHours: Int = 0,
     val nextTaskMinutes: Int = 0,
     val currentDay: String = "",
+    val searchQuery: String = "",
+    val isSearching: Boolean = false,
 )

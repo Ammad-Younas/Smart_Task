@@ -1,6 +1,7 @@
 package com.madi.smarttask.feature_task.task.presentation.component
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,7 +22,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.madi.smarttask.R
 import com.madi.smarttask.core.domain.model.Category
 import com.madi.smarttask.core.domain.model.Priority
 import com.madi.smarttask.core.domain.model.TaskStatus
@@ -53,7 +58,7 @@ fun Dashboard(
     }
 
     val filteredTasks =
-        remember(state.tasks, selectedCategoryName, selectedStatus, selectedPriority) {
+        remember(state.tasks, selectedCategoryName, selectedStatus, selectedPriority, state.searchQuery) {
             state.tasks.filter { task ->
                 val currentTime = System.currentTimeMillis()
                 val matchesCategory = selectedCategoryName == null || task.category.name.equals(
@@ -68,7 +73,11 @@ fun Dashboard(
                     TaskStatus.PENDING -> !task.isCompleted && (task.dueDate == 0L || task.dueDate >= currentTime)
                     TaskStatus.OVERDUE -> !task.isCompleted && task.dueDate in 1..<currentTime
                 }
-                matchesCategory && matchesPriority && matchesStatus
+                val matchesSearch = state.searchQuery.isBlank() ||
+                        task.title.contains(state.searchQuery, ignoreCase = true) ||
+                        (task.description?.contains(state.searchQuery, ignoreCase = true) == true)
+
+                matchesCategory && matchesPriority && matchesStatus && matchesSearch
             }
         }
 
@@ -117,16 +126,33 @@ fun Dashboard(
                 Spacer(Modifier.height(SpaceSmall))
             }
         }
-        items(filteredTasks) { task ->
-            TaskItem(
-                task = task,
-                onCheckedChange = { isChecked ->
-                    viewModel.onEvent(TaskEvent.ToggleTaskCompletion(task, isChecked))
-                },
-                onClick = {
-                    onNavigate(Screen.TaskDetailScreen.passTaskId(task.id))
+        if (filteredTasks.isEmpty()) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 48.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.no_tasks_yet),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
-            )
+            }
+        } else {
+            items(filteredTasks) { task ->
+                TaskItem(
+                    task = task,
+                    onCheckedChange = { isChecked ->
+                        viewModel.onEvent(TaskEvent.ToggleTaskCompletion(task, isChecked))
+                    },
+                    onClick = {
+                        onNavigate(Screen.TaskDetailScreen.passTaskId(task.id))
+                    }
+                )
+            }
         }
     }
 }

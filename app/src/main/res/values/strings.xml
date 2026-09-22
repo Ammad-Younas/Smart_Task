@@ -102,4 +102,21 @@
     <string name="default_category_cannot_be_edited">Default category cannot be edited</string>
     <string name="default_category_cannot_be_deleted">Default category cannot be deleted</string>
     <string name="delete_category_confirmation">Are you sure you want to delete \'%s\'?</string>
+    <string name="notification_title_reminder">Task Reminder</string>
+    <string name="notification_msg_reminder">Upcoming: %s</string>
+    <string name="notification_title_deadline">Task Due Now</string>
+    <string name="notification_msg_deadline">Deadline reached for %s</string>
+    <string name="notification_title_overdue">Task Overdue</string>
+    <string name="notification_msg_overdue">%s is past due</string>
+    <string name="notification_title_completed">Task Completed</string>
+    <string name="notification_msg_completed">Great job finishing %s</string>
+    <string name="notification_msg_completed_simple">You completed \'%s\'</string>
+    <string name="just_now">Just now</string>
+    <string name="was_due">Was due %s</string>
+    <string name="overdue">Overdue</string>
+    <string name="notification_channel_name">SmartTask Notifications</string>
+    <string name="notification_channel_description">Task deadline and reminder notifications</string>
+    <string name="no_tasks_yet">No tasks yet</string>
+    <string name="no_notifications_yet">No notifications yet</string>
+    <string name="smart_task_management">Smart Task Management</string>
 </resources>

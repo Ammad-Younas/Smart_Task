@@ -9,30 +9,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.madi.smarttask.R
-import com.madi.smarttask.feature_task.task.presentation.util.TaskTab
 
 @Composable
 fun TaskTabRow(
     modifier: Modifier = Modifier,
-    selectedTab: TaskTab,
-    onTabSelected: (TaskTab) -> Unit,
+    selectedTabIndex: Int,
+    onTabSelected: (Int) -> Unit,
 ) {
     PrimaryTabRow(
-        selectedTabIndex = selectedTab.ordinal,
+        selectedTabIndex = selectedTabIndex,
         modifier = modifier,
         containerColor = Color.Transparent,
         divider = {}
     ) {
         Tab(
-            selected = selectedTab == TaskTab.DASHBOARD,
-            onClick = { onTabSelected(TaskTab.DASHBOARD) },
+            selected = selectedTabIndex == 0,
+            onClick = { onTabSelected(0) },
             selectedContentColor = MaterialTheme.colorScheme.primary,
             unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             text = { Text(text = stringResource(R.string.dashboard)) },
         )
         Tab(
-            selected = selectedTab == TaskTab.CREATE_TASK,
-            onClick = { onTabSelected(TaskTab.CREATE_TASK) },
+            selected = selectedTabIndex == 1,
+            onClick = { onTabSelected(1) },
             selectedContentColor = MaterialTheme.colorScheme.primary,
             unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             text = { Text(text = stringResource(R.string.create_task)) },

@@ -6,6 +6,8 @@ import com.madi.smarttask.core.data.local.entity.TaskEntity
 import com.madi.smarttask.core.data.local.entity.TaskStatsEntity
 import com.madi.smarttask.core.domain.model.Task
 import com.madi.smarttask.core.domain.repository.TaskRepository
+import com.madi.smarttask.feature_notification.domain.util.NotificationCategory
+import com.madi.smarttask.feature_notification.domain.util.TaskNotificationScheduler
 import com.madi.smarttask.feature_task.task.domain.model.Stats
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -13,7 +15,8 @@ import kotlinx.coroutines.flow.onStart
 
 class TaskRepositoryImpl (
     private val dao: TaskDao,
-    private val taskStatsDao: TaskStatsDao
+    private val taskStatsDao: TaskStatsDao,
+    private val taskNotificationScheduler: TaskNotificationScheduler
 ): TaskRepository {
 
     override fun getTasks(): Flow<List<Task>> {
@@ -33,18 +36,29 @@ class TaskRepositoryImpl (
     }
 
     override suspend fun insertTask(task: Task) {
-        dao.insertTask(TaskEntity.fromTask(task))
+        val insertedId = dao.insertTask(TaskEntity.fromTask(task))
+        val taskWithId = task.copy(id = insertedId)
         recalculateAndUpdateStats()
+        if (!taskWithId.isCompleted) {
+            taskNotificationScheduler.scheduleTaskNotifications(taskWithId)
+        }
     }
 
     override suspend fun updateTask(task: Task) {
         dao.updateTask(TaskEntity.fromTask(task))
         recalculateAndUpdateStats()
+        if (task.isCompleted) {
+            taskNotificationScheduler.cancelTaskNotifications(task.id)
+            taskNotificationScheduler.postImmediateNotification(task, NotificationCategory.COMPLETED)
+        } else {
+            taskNotificationScheduler.scheduleTaskNotifications(task)
+        }
     }
 
     override suspend fun deleteTask(id: Long) {
         dao.deleteTask(id)
         recalculateAndUpdateStats()
+        taskNotificationScheduler.cancelTaskNotifications(id)
     }
 
     private suspend fun recalculateAndUpdateStats() {

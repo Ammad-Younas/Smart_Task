@@ -37,7 +37,6 @@ fun NotificationItem(
         NotificationCategory.REMINDER -> Icons.Default.Notifications to Color(0xFFFFB74D)
         NotificationCategory.OVERDUE -> Icons.Default.Warning to Color(0xFFEF5350)
         NotificationCategory.COMPLETED -> Icons.Default.EmojiEvents to Color(0xFF66BB6A)
-        NotificationCategory.UPDATE -> Icons.Default.Info to Color(0xFF42A5F5)
         NotificationCategory.DEADLINE -> Icons.Default.Notifications to Color(0xFFFFB74D)
     }
 

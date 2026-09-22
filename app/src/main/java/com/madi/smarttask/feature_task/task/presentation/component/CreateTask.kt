@@ -34,16 +34,27 @@ import com.madi.smarttask.feature_task.task.presentation.TaskError
 import com.madi.smarttask.feature_task.task.presentation.TaskEvent
 import com.madi.smarttask.feature_task.task.presentation.TaskViewModel
 import com.madi.smarttask.feature_task.task.presentation.asString
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import com.madi.smarttask.core.util.permission.PermissionManager
 
 @Composable
 fun CreateTask(
     viewModel: TaskViewModel,
 ) {
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
     val state = viewModel.state.collectAsState().value
 
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { _ ->
+        viewModel.onEvent(TaskEvent.SaveTask)
+    }
 
     TaskDateTimePickerDialogs(
         dueDate = state.dueDate,
@@ -92,7 +103,18 @@ fun CreateTask(
         Spacer(modifier = Modifier.weight(1f))
         
         Button(
-            onClick = { viewModel.onEvent(TaskEvent.SaveTask) },
+            onClick = {
+                if (!PermissionManager.hasNotificationPermission(context)) {
+                    val permission = PermissionManager.getNotificationPermission()
+                    if (permission != null) {
+                        permissionLauncher.launch(permission)
+                    } else {
+                        viewModel.onEvent(TaskEvent.SaveTask)
+                    }
+                } else {
+                    viewModel.onEvent(TaskEvent.SaveTask)
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),

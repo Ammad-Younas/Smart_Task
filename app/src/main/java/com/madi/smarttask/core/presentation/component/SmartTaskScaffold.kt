@@ -25,12 +25,14 @@ fun SmartTaskScaffold(
     snackbarHostState: SnackbarHostState,
     topBar: @Composable () -> Unit = {},
     showBottomBar: Boolean = true,
+    showFAB: @Composable () -> Unit = {},
     bottomNavItemsList: List<BottomNavItem> = NavItems.NAV_ITEMS,
     content: @Composable () -> Unit
 ) {
     Scaffold(
         modifier = modifier,
         topBar = topBar,
+        floatingActionButton = showFAB,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             if (showBottomBar) {

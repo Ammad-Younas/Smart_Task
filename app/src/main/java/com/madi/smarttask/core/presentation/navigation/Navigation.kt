@@ -60,12 +60,21 @@ fun Navigation(
             )
         }
         composable(
-            route = Screen.TaskScreen.route
-        ) {
+            route = Screen.TaskScreen.route,
+            arguments = listOf(
+                navArgument("tab") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) { backStackEntry ->
+            val initialTab = backStackEntry.arguments?.getString("tab")
             TaskScreen(
                 onNavigate = navController::navigate,
                 snackbarHostState = snackbarHostState,
-                scope = coroutineScope
+                scope = coroutineScope,
+                initialTab = initialTab
             )
         }
         composable(

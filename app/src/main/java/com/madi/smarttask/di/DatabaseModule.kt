@@ -3,6 +3,8 @@ package com.madi.smarttask.di
 import android.content.Context
 import androidx.room.Room
 import com.madi.smarttask.core.data.local.SmartTaskDatabase
+import com.madi.smarttask.core.data.local.dao.NotificationDao
+import com.madi.smarttask.core.data.local.dao.TaskDao
 import com.madi.smarttask.core.data.repository.CategoryRepositoryImpl
 import com.madi.smarttask.core.data.repository.TaskRepositoryImpl
 import com.madi.smarttask.core.domain.repository.CategoryRepository
@@ -14,6 +16,7 @@ import com.madi.smarttask.core.domain.usecase.GetTasks
 import com.madi.smarttask.core.domain.usecase.InsertTask
 import com.madi.smarttask.core.domain.usecase.TaskUseCases
 import com.madi.smarttask.core.domain.usecase.UpdateTask
+import com.madi.smarttask.feature_notification.domain.util.TaskNotificationScheduler
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,8 +42,27 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideTaskRepository(db: SmartTaskDatabase): TaskRepository {
-        return TaskRepositoryImpl(db.taskDao, db.taskStatsDao)
+    fun provideNotificationDao(db: SmartTaskDatabase): NotificationDao {
+        return db.notificationDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideTaskDao(db: SmartTaskDatabase): TaskDao {
+        return db.taskDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideTaskRepository(
+        db: SmartTaskDatabase,
+        taskNotificationScheduler: TaskNotificationScheduler
+    ): TaskRepository {
+        return TaskRepositoryImpl(
+            dao = db.taskDao,
+            taskStatsDao = db.taskStatsDao,
+            taskNotificationScheduler = taskNotificationScheduler
+        )
     }
 
     @Provides

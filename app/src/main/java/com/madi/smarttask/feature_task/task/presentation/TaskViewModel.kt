@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.madi.smarttask.R
 import com.madi.smarttask.core.domain.model.Task
+import com.madi.smarttask.core.domain.repository.CategoryRepository
 import com.madi.smarttask.core.domain.usecase.TaskUseCases
 import com.madi.smarttask.core.domain.util.ValidationUtil
 import com.madi.smarttask.core.util.UiEvent
@@ -19,7 +20,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.madi.smarttask.core.domain.repository.CategoryRepository
 
 @HiltViewModel
 class TaskViewModel @Inject constructor(
@@ -109,6 +109,17 @@ class TaskViewModel @Inject constructor(
                     taskUseCases.deleteTask(event.id)
                 }
             }
+            is TaskEvent.EnteredSearchQuery -> {
+                _state.update { it.copy(searchQuery = event.query) }
+            }
+            TaskEvent.ToggleSearch -> {
+                _state.update {
+                    it.copy(
+                        isSearchOpen = !it.isSearchOpen,
+                        searchQuery = if (it.isSearchOpen) "" else it.searchQuery
+                    )
+                }
+            }
             is TaskEvent.SaveTask -> {
                 saveTask()
             }
@@ -138,12 +149,14 @@ class TaskViewModel @Inject constructor(
                 _state.update {
                     TaskState(
                         tasks = state.value.tasks,
-                        stats = state.value.stats
+                        stats = state.value.stats,
+                        categories = state.value.categories
                     )
                 }
                 _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.task_saved)))
                 _eventFlow.emit(TaskEvent.TaskSaved)
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                e.printStackTrace()
                 _eventFlow.emit(UiEvent.ShowSnackBar(UiText.unknownError()))
             }
         }
