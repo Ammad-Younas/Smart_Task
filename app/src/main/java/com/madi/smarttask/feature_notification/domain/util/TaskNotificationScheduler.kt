@@ -20,6 +20,7 @@ class TaskNotificationScheduler @Inject constructor(
 
     fun scheduleTaskNotifications(task: Task) {
         try {
+            cancelTaskNotifications(task.id)
             if (task.isCompleted || task.dueDate <= 0L) return
             val currentTime = System.currentTimeMillis()
 
