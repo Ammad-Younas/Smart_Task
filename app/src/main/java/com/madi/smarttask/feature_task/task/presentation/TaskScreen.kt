@@ -1,5 +1,9 @@
 package com.madi.smarttask.feature_task.task.presentation
 
+import android.app.Activity
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,7 +14,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,6 +40,7 @@ import com.madi.smarttask.core.presentation.ui.theme.NavActionIconSize
 import com.madi.smarttask.core.presentation.ui.theme.SpaceMedium
 import com.madi.smarttask.core.presentation.util.asString
 import com.madi.smarttask.core.util.UiEvent
+import com.madi.smarttask.core.util.speech.SpeechToTextHelper
 import com.madi.smarttask.feature_task.task.presentation.component.CreateTask
 import com.madi.smarttask.feature_task.task.presentation.component.Dashboard
 import com.madi.smarttask.feature_task.task.presentation.component.TaskTabRow
@@ -58,6 +63,19 @@ fun TaskScreen(
 
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+
+
+    val speechLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK){
+            val spokenText = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull() ?: ""
+            if (spokenText.isNotBlank()){
+                viewModel.onEvent(TaskEvent.EnteredSearchQuery(spokenText))
+            }
+        }
+    }
+
 
     LaunchedEffect(initialTab) {
         if (initialTab == "create_task") {
@@ -121,10 +139,17 @@ fun TaskScreen(
             },
             navActions = {
                 IconButton(
-                    onClick = { viewModel.onEvent(TaskEvent.ToggleSearch) }
-                ){
+                    onClick = {
+                        if (state.isSearchOpen) {
+                            val intent = SpeechToTextHelper.createSpeechIntent()
+                            speechLauncher.launch(intent)
+                        } else {
+                            viewModel.onEvent(TaskEvent.ToggleSearch)
+                        }
+                    }
+                ) {
                     Icon(
-                        imageVector = if (state.isSearchOpen) Icons.Default.Close else Icons.Default.Search,
+                        imageVector = if (state.isSearchOpen) Icons.Default.Mic else Icons.Default.Search,
                         contentDescription = stringResource(R.string.search),
                         modifier = Modifier.size(NavActionIconSize)
                     )
