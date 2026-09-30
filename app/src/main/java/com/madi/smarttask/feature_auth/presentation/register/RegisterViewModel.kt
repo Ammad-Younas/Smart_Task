@@ -95,7 +95,7 @@ class RegisterViewModel @Inject constructor(
                 is Resource.Success -> {
                     _registerState.value = registerState.value.copy(isLoading = false)
                     _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.registration_successful)))
-                    _eventFlow.emit(UiEvent.Navigate(Screen.HomeScreen.route))
+                    _eventFlow.emit(UiEvent.Navigate(Screen.LoginScreen.route))
                 }
                 is Resource.Error -> {
                     _registerState.value = registerState.value.copy(isLoading = false)

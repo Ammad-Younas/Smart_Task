@@ -19,6 +19,7 @@ import com.madi.smarttask.feature_setting.SettingScreen
 import com.madi.smarttask.feature_setting.presentation.AboutScreen
 import com.madi.smarttask.feature_setting.presentation.AppearanceScreen
 import com.madi.smarttask.feature_setting.presentation.CategoriesScreen
+import com.madi.smarttask.feature_setting.presentation.edit_profile.EditProfileScreen
 import com.madi.smarttask.feature_task.edit_task.presentation.EditTaskScreen
 import com.madi.smarttask.feature_task.home.presentation.HomeScreen
 import com.madi.smarttask.feature_task.task.presentation.TaskScreen
@@ -69,7 +70,10 @@ fun Navigation(
             RegisterScreen(
                 onShowSnackbar = onShowSnackbar,
                 onNavigate = { route ->
-                    navController.navigate(route)
+                    navController.popBackStack()
+                    if (route != Screen.LoginScreen.route) {
+                        navController.navigate(route)
+                    }
                 }
             )
         }
@@ -122,6 +126,14 @@ fun Navigation(
         ) {
             CategoriesScreen(
                 onNavigateUp = navController::navigateUp
+            )
+        }
+        composable(
+            route = Screen.EditProfileScreen.route
+        ) {
+            EditProfileScreen(
+                onNavigateUp = navController::navigateUp,
+                onShowSnackbar = onShowSnackbar
             )
         }
         composable(

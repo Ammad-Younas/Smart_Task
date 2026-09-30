@@ -133,8 +133,10 @@
     <string name="error_input_too_short">Input must be at least %d characters</string>
     <string name="error_invalid_email">Please enter a valid email address</string>
     <string name="error_invalid_password">Password must contain capital letters and numbers</string>
-    <string name="error_user_not_found">User doesn\'t exist, please create an account</string>
+    <string name="error_user_not_found">User with this email doesn\'t exist</string>
+    <string name="error_invalid_credentials">Invalid email or password</string>
     <string name="error_user_already_exists">User with this email already exists</string>
+    <string name="error_too_many_requests">Too many failed attempts. Please try again later</string>
     <string name="create_an_account">Create an Account</string>
     <string name="register_to_continue">Create an account to start tracking your tasks</string>
     <string name="already_have_an_account">Already have an account?</string>
@@ -142,5 +144,15 @@
     <string name="username">First Name</string>
     <string name="error_login_failed">Login failed. Please try again.</string>
     <string name="error_registration_failed">Registration failed. Please try again.</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="edit_profile_subtitle">Update name &amp; password</string>
+    <string name="logout">Logout</string>
+    <string name="logout_subtitle">Sign out of your account</string>
+    <string name="logout_confirmation_title">Logout?</string>
+    <string name="logout_confirmation_message">Are you sure you want to log out of SmartTask?</string>
+    <string name="email_cannot_be_changed_warning">Note: Email address cannot be changed after registration.</string>
+    <string name="profile_updated_successfully">Profile updated successfully</string>
+    <string name="new_password">New Password (optional)</string>
+    <string name="leave_blank_to_keep_current">Leave blank to keep current password</string>
     <string name="unknown_error">Unknown Error</string>
 </resources>

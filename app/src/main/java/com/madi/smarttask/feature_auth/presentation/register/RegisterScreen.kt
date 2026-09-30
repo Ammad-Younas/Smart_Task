@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,7 +43,6 @@ import com.madi.smarttask.core.util.UiEvent
 import com.madi.smarttask.core.util.UiText
 import com.madi.smarttask.feature_auth.presentation.util.AuthError
 import com.madi.smarttask.feature_auth.presentation.util.asString
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun RegisterScreen(
@@ -53,7 +53,7 @@ fun RegisterScreen(
     val state = viewModel.registerState.value
 
     LaunchedEffect(key1 = true) {
-        viewModel.eventFlow.collectLatest { event ->
+        viewModel.eventFlow.collect { event ->
             when (event) {
                 is UiEvent.ShowSnackBar -> {
                     onShowSnackbar(event.uiText)
@@ -74,7 +74,8 @@ fun RegisterScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .imePadding(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -114,6 +115,15 @@ fun RegisterScreen(
                 leadingIcon = Icons.Outlined.Email,
                 keyboardType = KeyboardType.Email,
                 modifier = Modifier.fillMaxWidth()
+            )
+
+            Text(
+                text = stringResource(R.string.email_cannot_be_changed_warning),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp, start = 4.dp)
             )
 
             Spacer(modifier = Modifier.height(SpaceMedium))

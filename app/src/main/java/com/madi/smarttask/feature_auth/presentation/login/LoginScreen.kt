@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,7 +42,6 @@ import com.madi.smarttask.core.util.UiEvent
 import com.madi.smarttask.core.util.UiText
 import com.madi.smarttask.feature_auth.presentation.util.AuthError
 import com.madi.smarttask.feature_auth.presentation.util.asString
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun LoginScreen(
@@ -52,7 +52,7 @@ fun LoginScreen(
     val state = viewModel.loginState.value
 
     LaunchedEffect(key1 = true) {
-        viewModel.eventFlow.collectLatest { event ->
+        viewModel.eventFlow.collect { event ->
             when (event) {
                 is UiEvent.ShowSnackBar -> {
                     onShowSnackbar(event.uiText)
@@ -73,7 +73,8 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .imePadding(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
