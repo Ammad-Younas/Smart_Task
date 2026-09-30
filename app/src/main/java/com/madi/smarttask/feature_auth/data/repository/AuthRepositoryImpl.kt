@@ -1,6 +1,7 @@
 package com.madi.smarttask.feature_auth.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.madi.smarttask.R
 import com.madi.smarttask.core.util.Resource
 import com.madi.smarttask.core.util.SimpleResource
@@ -21,7 +22,9 @@ class AuthRepositoryImpl @Inject constructor(
             } else {
                 Resource.Error(UiText.StringResource(R.string.check_your_internet))
             }
-        } catch (e: Exception) {
+        } catch (_: FirebaseAuthInvalidUserException) {
+            Resource.Error(UiText.StringResource(R.string.error_user_not_found))
+        } catch (_: Exception) {
             Resource.Error(UiText.unknownError())
         }
     }

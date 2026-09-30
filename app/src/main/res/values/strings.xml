@@ -133,5 +133,6 @@
     <string name="error_input_too_short">Input must be at least %d characters</string>
     <string name="error_invalid_email">Please enter a valid email address</string>
     <string name="error_invalid_password">Password must contain capital letters and numbers</string>
+    <string name="error_user_not_found">User doesn\'t exist, please create an account</string>
     <string name="unknown_error">Unknown Error</string>
 </resources>
