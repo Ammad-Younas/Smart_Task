@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.madi.smarttask.core.data.preferences.SettingsDataStore
 import com.madi.smarttask.core.presentation.navigation.Screen
 import com.madi.smarttask.feature_name.domain.usecase.NameUseCases
@@ -25,13 +26,14 @@ import kotlin.time.Duration.Companion.milliseconds
 class MainViewModel @Inject constructor(
     onboardingUseCases: OnboardingUseCases,
     nameUseCases: NameUseCases,
-    settingsDataStore: SettingsDataStore
+    settingsDataStore: SettingsDataStore,
+    firebaseAuth: FirebaseAuth
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    private val _startDestination = mutableStateOf(Screen.OnBoardingScreen.route)
+    private val _startDestination = mutableStateOf(Screen.LoginScreen.route)
     val startDestination: State<String> = _startDestination
 
     val themeMode: StateFlow<ThemeMode> = settingsDataStore.themeMode
@@ -46,8 +48,11 @@ class MainViewModel @Inject constructor(
             onboardingUseCases.isOnboardingCompleted(),
             nameUseCases.getUserName()
         ) { isCompleted, name ->
+            val isUserLoggedIn = firebaseAuth.currentUser != null
             if (!isCompleted) {
                 _startDestination.value = Screen.OnBoardingScreen.route
+            } else if (!isUserLoggedIn) {
+                _startDestination.value = Screen.LoginScreen.route
             } else if (name.isNullOrBlank()) {
                 _startDestination.value = Screen.NameScreen.route
             } else {

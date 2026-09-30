@@ -12,7 +12,7 @@
 
     <string name="onboarding_title_3">Track Your Productivity</string>
     <string name="onboarding_desc_3">Stay focused, complete your goals, and track your daily achievement statistics.</string>
-    <string name="unknown_error">Unknown Error</string>
+    <string name="check_your_internet">Please check your internet connection, and try again</string>
     <string name="Back">Back</string>
     <string name="home">Home</string>
     <string name="tasks">Tasks</string>
@@ -119,4 +119,19 @@
     <string name="no_tasks_yet">No tasks yet</string>
     <string name="no_notifications_yet">No notifications yet</string>
     <string name="smart_task_management">Smart Task Management</string>
+    <string name="password_visible_content_description">Hide password</string>
+    <string name="password_hidden_content_description">Show password</string>
+    <string name="login">Login</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="welcome_back">Welcome Back</string>
+    <string name="login_to_continue">Login to continue managing your tasks</string>
+    <string name="dont_have_an_account">Don\'t have an account?</string>
+    <string name="register">Register</string>
+    <string name="login_successful">Login successful</string>
+    <string name="error_field_empty">This field cannot be empty</string>
+    <string name="error_input_too_short">Input must be at least %d characters</string>
+    <string name="error_invalid_email">Please enter a valid email address</string>
+    <string name="error_invalid_password">Password must contain capital letters and numbers</string>
+    <string name="unknown_error">Unknown Error</string>
 </resources>

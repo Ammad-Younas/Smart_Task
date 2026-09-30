@@ -7,7 +7,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -16,7 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.madi.smarttask.R
 
 @Composable
 fun SmartTaskTextField(
@@ -28,10 +35,13 @@ fun SmartTaskTextField(
     minLines: Int = 1,
     maxLines: Int = 1,
     singleLine: Boolean = true,
+    showPasswordToggle: Boolean = false,
+    onPasswordToggleClick: (Boolean) -> Unit = {},
     leadingIcon: ImageVector? = null,
     @StringRes leadingIconDescription: Int? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
+    isPasswordToggleDisplayed: Boolean = keyboardType == KeyboardType.Password,
     onValueChange: (String) -> Unit,
 ) {
     Column(modifier = modifier) {
@@ -50,15 +60,46 @@ fun SmartTaskTextField(
             singleLine = singleLine,
             minLines = minLines,
             maxLines = maxLines,
-            leadingIcon = leadingIcon?.let { icon ->
-                {
+            visualTransformation = if (!showPasswordToggle && isPasswordToggleDisplayed) {
+                PasswordVisualTransformation()
+            } else {
+                VisualTransformation.None
+            },
+            leadingIcon = if (leadingIcon != null) {
+                @Composable {
                     Icon(
-                        imageVector = icon,
+                        imageVector = leadingIcon,
                         contentDescription = leadingIconDescription?.let { stringResource(id = it) }
                     )
                 }
+            } else {
+                null
             },
-            trailingIcon = trailingIcon,
+            trailingIcon = if (isPasswordToggleDisplayed) {
+                @Composable {
+                    IconButton(
+                        onClick = {
+                            onPasswordToggleClick(!showPasswordToggle)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = if (showPasswordToggle) {
+                                Icons.Filled.VisibilityOff
+                            } else {
+                                Icons.Filled.Visibility
+                            },
+                            contentDescription = if (showPasswordToggle) {
+                                stringResource(R.string.password_visible_content_description)
+                            } else {
+                                stringResource(R.string.password_hidden_content_description)
+                            },
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            } else {
+                trailingIcon
+            },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp)
         )

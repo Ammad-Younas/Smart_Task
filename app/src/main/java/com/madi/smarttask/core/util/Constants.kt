@@ -8,7 +8,5 @@ object Constants {
     const val MIN_NAME_LENGTH = 3
     const val MAX_NAME_LENGTH = 7
 
-    const val COLUMNS_PORTRAIT = 12
-    const val COLUMNS_LANDSCAPE = 24
-    const val ROWS = 7
+    const val MIN_PASSWORD_LENGTH = 3
 }
