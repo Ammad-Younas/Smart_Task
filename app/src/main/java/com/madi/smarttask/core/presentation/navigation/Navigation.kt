@@ -12,6 +12,7 @@ import androidx.navigation.navArgument
 import com.madi.smarttask.core.presentation.util.asString
 import com.madi.smarttask.core.util.UiText
 import com.madi.smarttask.feature_auth.presentation.login.LoginScreen
+import com.madi.smarttask.feature_auth.presentation.register.RegisterScreen
 import com.madi.smarttask.feature_name.presentation.NameScreen
 import com.madi.smarttask.feature_notification.presentation.NotificationScreen
 import com.madi.smarttask.feature_onboarding.presentation.OnboardingScreen
@@ -59,7 +60,16 @@ fun Navigation(
             LoginScreen(
                 onShowSnackbar = onShowSnackbar,
                 onNavigate = { route ->
-                    navController.popBackStack()
+                    navController.navigate(route)
+                }
+            )
+        }
+        composable(
+            route = Screen.RegisterScreen.route
+        ) {
+            RegisterScreen(
+                onShowSnackbar = onShowSnackbar,
+                onNavigate = { route ->
                     navController.navigate(route)
                 }
             )

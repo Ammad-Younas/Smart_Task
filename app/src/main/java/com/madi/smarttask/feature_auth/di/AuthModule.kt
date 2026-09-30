@@ -3,7 +3,10 @@ package com.madi.smarttask.feature_auth.di
 import com.google.firebase.auth.FirebaseAuth
 import com.madi.smarttask.feature_auth.data.repository.AuthRepositoryImpl
 import com.madi.smarttask.feature_auth.domain.repository.AuthRepository
+import com.madi.smarttask.feature_auth.domain.usecase.AuthenticateWithGoogleUseCase
 import com.madi.smarttask.feature_auth.domain.usecase.LoginUseCase
+import com.madi.smarttask.feature_auth.domain.usecase.RegisterUseCase
+import com.madi.smarttask.feature_name.domain.usecase.NameUseCases
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,13 +25,28 @@ object AuthModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository(firebaseAuth: FirebaseAuth): AuthRepository {
-        return AuthRepositoryImpl(firebaseAuth)
+    fun provideAuthRepository(
+        firebaseAuth: FirebaseAuth,
+        nameUseCases: NameUseCases
+    ): AuthRepository {
+        return AuthRepositoryImpl(firebaseAuth, nameUseCases)
     }
 
     @Provides
     @Singleton
     fun provideLoginUseCase(repository: AuthRepository): LoginUseCase {
         return LoginUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegisterUseCase(repository: AuthRepository): RegisterUseCase {
+        return RegisterUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthenticateWithGoogleUseCase(repository: AuthRepository): AuthenticateWithGoogleUseCase {
+        return AuthenticateWithGoogleUseCase(repository)
     }
 }

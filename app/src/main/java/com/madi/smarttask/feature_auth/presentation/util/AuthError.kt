@@ -13,6 +13,8 @@ fun AuthError.asString(): String {
         is AuthError.InputTooShort -> stringResource(R.string.error_input_too_short, Constants.MIN_PASSWORD_LENGTH)
         is AuthError.InvalidEmail -> stringResource(R.string.error_invalid_email)
         is AuthError.InvalidPassword -> stringResource(R.string.error_invalid_password)
+        is AuthError.UserAlreadyExists -> stringResource(R.string.error_user_already_exists)
+        is AuthError.UserNotFound -> stringResource(R.string.error_user_not_found)
     }
 }
 
@@ -21,4 +23,6 @@ sealed class AuthError : Error() {
     object InputTooShort : AuthError()
     object InvalidEmail : AuthError()
     object InvalidPassword : AuthError()
+    object UserAlreadyExists : AuthError()
+    object UserNotFound : AuthError()
 }

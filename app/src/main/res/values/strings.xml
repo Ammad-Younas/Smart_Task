@@ -134,5 +134,20 @@
     <string name="error_invalid_email">Please enter a valid email address</string>
     <string name="error_invalid_password">Password must contain capital letters and numbers</string>
     <string name="error_user_not_found">User doesn\'t exist, please create an account</string>
+    <string name="error_user_already_exists">User with this email already exists</string>
+    <string name="create_an_account">Create an Account</string>
+    <string name="register_to_continue">Create an account to start tracking your tasks</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="registration_successful">Registration successful</string>
+    <string name="username">First Name</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="sign_up_with_google">Sign up with Google</string>
+    <string name="or">OR</string>
+    <string name="error_login_failed">Login failed. Please try again.</string>
+    <string name="error_registration_failed">Registration failed. Please try again.</string>
+    <string name="error_google_sign_in_failed">Google sign-in failed. Please try again.</string>
+    <string name="error_google_sign_up_failed">Google sign-up failed. Please try again.</string>
+    <string name="error_configure_web_client_id">Please configure default_web_client_id in strings.xml or google-services.json</string>
+    <string name="default_web_client_id" translatable="false">YOUR_DEFAULT_WEB_CLIENT_ID</string>
     <string name="unknown_error">Unknown Error</string>
 </resources>

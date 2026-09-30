@@ -9,4 +9,6 @@ object Constants {
     const val MAX_NAME_LENGTH = 7
 
     const val MIN_PASSWORD_LENGTH = 3
+
+    const val DEFAULT_WEB_CLIENT_ID = "YOUR_DEFAULT_WEB_CLIENT_ID"
 }
