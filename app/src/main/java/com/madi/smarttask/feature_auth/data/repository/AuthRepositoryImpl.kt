@@ -3,7 +3,6 @@ package com.madi.smarttask.feature_auth.data.repository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
 import com.madi.smarttask.R
@@ -75,35 +74,6 @@ class AuthRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             val uiText = e.localizedMessage?.let { UiText.DynamicString(it) }
                 ?: UiText.StringResource(R.string.error_registration_failed)
-            Resource.Error(uiText)
-        }
-    }
-
-    override suspend fun authenticateWithGoogle(idToken: String): SimpleResource {
-        return try {
-            val credential = GoogleAuthProvider.getCredential(idToken, null)
-            val result = firebaseAuth.signInWithCredential(credential).await()
-            val user = result.user
-            if (user != null) {
-                val displayName = user.displayName
-                if (!displayName.isNullOrBlank()) {
-                    settingsDataStore.saveUserName(displayName)
-                    val userMap = mapOf(
-                        "uid" to user.uid,
-                        "username" to displayName,
-                        "email" to (user.email ?: "")
-                    )
-                    try {
-                        FirebaseDatabase.getInstance().getReference("users").child(user.uid).setValue(userMap).await()
-                    } catch (_: Exception) { }
-                }
-                Resource.Success(Unit)
-            } else {
-                Resource.Error(UiText.StringResource(R.string.check_your_internet))
-            }
-        } catch (e: Exception) {
-            val uiText = e.localizedMessage?.let { UiText.DynamicString(it) }
-                ?: UiText.StringResource(R.string.error_google_sign_in_failed)
             Resource.Error(uiText)
         }
     }

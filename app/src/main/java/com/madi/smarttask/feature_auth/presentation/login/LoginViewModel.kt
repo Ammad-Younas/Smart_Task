@@ -1,24 +1,14 @@
 package com.madi.smarttask.feature_auth.presentation.login
 
-import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.credentials.CredentialManager
-import androidx.credentials.CustomCredential
-import androidx.credentials.GetCredentialRequest
-import androidx.credentials.exceptions.GetCredentialException
-import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.madi.smarttask.R
 import com.madi.smarttask.core.presentation.navigation.Screen
-import com.madi.smarttask.core.util.Constants
 import com.madi.smarttask.core.util.Resource
 import com.madi.smarttask.core.util.UiEvent
 import com.madi.smarttask.core.util.UiText
-import com.madi.smarttask.feature_auth.domain.usecase.AuthenticateWithGoogleUseCase
 import com.madi.smarttask.feature_auth.domain.usecase.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,8 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase,
-    private val authenticateWithGoogleUseCase: AuthenticateWithGoogleUseCase
+    private val loginUseCase: LoginUseCase
 ) : ViewModel() {
 
     private val _loginState = mutableStateOf(LoginState())
@@ -65,72 +54,6 @@ class LoginViewModel @Inject constructor(
             }
             is LoginEvent.Login -> {
                 login()
-            }
-        }
-    }
-
-    fun onGoogleSignInClick(context: Context, webClientId: String) {
-        viewModelScope.launch {
-            _loginState.value = loginState.value.copy(isLoading = true)
-            try {
-                if (webClientId.isNotBlank() && webClientId != Constants.DEFAULT_WEB_CLIENT_ID) {
-                    val credentialManager = CredentialManager.create(context)
-                    val googleIdOption = GetGoogleIdOption.Builder()
-                        .setFilterByAuthorizedAccounts(false)
-                        .setServerClientId(webClientId)
-                        .setAutoSelectEnabled(false)
-                        .build()
-
-                    val request = GetCredentialRequest.Builder()
-                        .addCredentialOption(googleIdOption)
-                        .build()
-
-                    val result = credentialManager.getCredential(
-                        request = request,
-                        context = context
-                    )
-
-                    val credential = result.credential
-                    if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-                        onGoogleSignInResult(googleIdTokenCredential.idToken)
-                    } else {
-                        _loginState.value = loginState.value.copy(isLoading = false)
-                    }
-                } else {
-                    _loginState.value = loginState.value.copy(isLoading = false)
-                    _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.error_configure_web_client_id)))
-                }
-            } catch (_: NoCredentialException) {
-                _loginState.value = loginState.value.copy(isLoading = false)
-                _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.error_no_google_account)))
-            } catch (e: GetCredentialException) {
-                _loginState.value = loginState.value.copy(isLoading = false)
-                val uiText = e.message?.let { UiText.DynamicString(it) }
-                    ?: UiText.StringResource(R.string.error_google_sign_in_canceled)
-                _eventFlow.emit(UiEvent.ShowSnackBar(uiText))
-            } catch (e: Exception) {
-                _loginState.value = loginState.value.copy(isLoading = false)
-                val uiText = e.localizedMessage?.let { UiText.DynamicString(it) }
-                    ?: UiText.StringResource(R.string.error_google_sign_in_failed)
-                _eventFlow.emit(UiEvent.ShowSnackBar(uiText))
-        }
-        }
-    }
-
-    private fun onGoogleSignInResult(idToken: String) {
-        viewModelScope.launch {
-            _loginState.value = loginState.value.copy(isLoading = true)
-            when (val result = authenticateWithGoogleUseCase(idToken)) {
-                is Resource.Success -> {
-                    _loginState.value = loginState.value.copy(isLoading = false)
-                    _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.login_successful)))
-                    _eventFlow.emit(UiEvent.Navigate(Screen.HomeScreen.route))
-                }
-                is Resource.Error -> {
-                    _loginState.value = loginState.value.copy(isLoading = false)
-                    _eventFlow.emit(UiEvent.ShowSnackBar(result.uiText ?: UiText.unknownError()))
-                }
             }
         }
     }

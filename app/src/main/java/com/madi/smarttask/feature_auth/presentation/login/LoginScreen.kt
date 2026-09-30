@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,14 +18,12 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -42,7 +39,6 @@ import com.madi.smarttask.core.presentation.ui.theme.SpaceLarge
 import com.madi.smarttask.core.presentation.ui.theme.SpaceMedium
 import com.madi.smarttask.core.util.UiEvent
 import com.madi.smarttask.core.util.UiText
-import com.madi.smarttask.feature_auth.presentation.component.GoogleAuthButton
 import com.madi.smarttask.feature_auth.presentation.util.AuthError
 import com.madi.smarttask.feature_auth.presentation.util.asString
 import kotlinx.coroutines.flow.collectLatest
@@ -54,8 +50,6 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val state = viewModel.loginState.value
-    val context = LocalContext.current
-    val defaultWebClientId = stringResource(R.string.default_web_client_id)
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -148,40 +142,6 @@ fun LoginScreen(
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(SpaceMedium))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                HorizontalDivider(
-                    modifier = Modifier.weight(1f),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-                )
-                Text(
-                    text = stringResource(R.string.or),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-                HorizontalDivider(
-                    modifier = Modifier.weight(1f),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(SpaceMedium))
-
-            GoogleAuthButton(
-                text = stringResource(R.string.sign_in_with_google),
-                enabled = !state.isLoading,
-                onClick = {
-                    viewModel.onGoogleSignInClick(context, defaultWebClientId)
-                }
-            )
 
             Spacer(modifier = Modifier.height(SpaceLarge))
 
