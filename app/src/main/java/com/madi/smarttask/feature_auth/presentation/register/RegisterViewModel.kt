@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
@@ -107,6 +109,14 @@ class RegisterViewModel @Inject constructor(
                     _registerState.value = registerState.value.copy(isLoading = false)
                     _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.error_configure_web_client_id)))
                 }
+            } catch (_: NoCredentialException) {
+                _registerState.value = registerState.value.copy(isLoading = false)
+                _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.error_no_google_account)))
+            } catch (e: GetCredentialException) {
+                _registerState.value = registerState.value.copy(isLoading = false)
+                val uiText = e.message?.let { UiText.DynamicString(it) }
+                    ?: UiText.StringResource(R.string.error_google_sign_up_canceled)
+                _eventFlow.emit(UiEvent.ShowSnackBar(uiText))
             } catch (e: Exception) {
                 _registerState.value = registerState.value.copy(isLoading = false)
                 val uiText = e.localizedMessage?.let { UiText.DynamicString(it) }

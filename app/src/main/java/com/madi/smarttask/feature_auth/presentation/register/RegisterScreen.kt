@@ -46,8 +46,6 @@ import com.madi.smarttask.core.util.UiText
 import com.madi.smarttask.feature_auth.presentation.component.GoogleAuthButton
 import com.madi.smarttask.feature_auth.presentation.util.AuthError
 import com.madi.smarttask.feature_auth.presentation.util.asString
-import com.madi.smarttask.feature_name.presentation.NameError
-import com.madi.smarttask.feature_name.presentation.asString
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -107,7 +105,7 @@ fun RegisterScreen(
                 text = state.usernameState.text,
                 onValueChange = { viewModel.onEvent(RegisterEvent.EnteredUsername(it)) },
                 hint = stringResource(R.string.username),
-                error = (state.usernameState.error as? NameError)?.asString() ?: "",
+                error = (state.usernameState.error as? AuthError)?.asString() ?: "",
                 leadingIcon = Icons.Outlined.Person,
                 modifier = Modifier.fillMaxWidth()
             )

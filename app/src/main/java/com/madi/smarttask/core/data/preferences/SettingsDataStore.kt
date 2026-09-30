@@ -20,6 +20,7 @@ class SettingsDataStore @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     private val themeKey = stringPreferencesKey("theme_mode")
+    private val userNameKey = stringPreferencesKey("user_name")
 
     val themeMode: Flow<ThemeMode> = context.dataStore.data.map { preferences ->
         val themeName = preferences[themeKey] ?: ThemeMode.SYSTEM_DEFAULT.name
@@ -30,9 +31,19 @@ class SettingsDataStore @Inject constructor(
         }
     }
 
+    val userName: Flow<String?> = context.dataStore.data.map { preferences ->
+        preferences[userNameKey]
+    }
+
     suspend fun setThemeMode(themeMode: ThemeMode) {
         context.dataStore.edit { preferences ->
             preferences[themeKey] = themeMode.name
+        }
+    }
+
+    suspend fun saveUserName(name: String) {
+        context.dataStore.edit { preferences ->
+            preferences[userNameKey] = name
         }
     }
 }

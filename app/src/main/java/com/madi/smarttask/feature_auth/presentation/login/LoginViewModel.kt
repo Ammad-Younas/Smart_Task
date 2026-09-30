@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
@@ -18,19 +20,16 @@ import com.madi.smarttask.core.util.UiEvent
 import com.madi.smarttask.core.util.UiText
 import com.madi.smarttask.feature_auth.domain.usecase.AuthenticateWithGoogleUseCase
 import com.madi.smarttask.feature_auth.domain.usecase.LoginUseCase
-import com.madi.smarttask.feature_name.domain.usecase.NameUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val authenticateWithGoogleUseCase: AuthenticateWithGoogleUseCase,
-    private val nameUseCases: NameUseCases
+    private val authenticateWithGoogleUseCase: AuthenticateWithGoogleUseCase
 ) : ViewModel() {
 
     private val _loginState = mutableStateOf(LoginState())
@@ -102,12 +101,20 @@ class LoginViewModel @Inject constructor(
                     _loginState.value = loginState.value.copy(isLoading = false)
                     _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.error_configure_web_client_id)))
                 }
+            } catch (_: NoCredentialException) {
+                _loginState.value = loginState.value.copy(isLoading = false)
+                _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.error_no_google_account)))
+            } catch (e: GetCredentialException) {
+                _loginState.value = loginState.value.copy(isLoading = false)
+                val uiText = e.message?.let { UiText.DynamicString(it) }
+                    ?: UiText.StringResource(R.string.error_google_sign_in_canceled)
+                _eventFlow.emit(UiEvent.ShowSnackBar(uiText))
             } catch (e: Exception) {
                 _loginState.value = loginState.value.copy(isLoading = false)
                 val uiText = e.localizedMessage?.let { UiText.DynamicString(it) }
                     ?: UiText.StringResource(R.string.error_google_sign_in_failed)
                 _eventFlow.emit(UiEvent.ShowSnackBar(uiText))
-            }
+        }
         }
     }
 
@@ -118,14 +125,7 @@ class LoginViewModel @Inject constructor(
                 is Resource.Success -> {
                     _loginState.value = loginState.value.copy(isLoading = false)
                     _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.login_successful)))
-
-                    val name = nameUseCases.getUserName().firstOrNull()
-                    val targetRoute = if (name.isNullOrBlank()) {
-                        Screen.NameScreen.route
-                    } else {
-                        Screen.HomeScreen.route
-                    }
-                    _eventFlow.emit(UiEvent.Navigate(targetRoute))
+                    _eventFlow.emit(UiEvent.Navigate(Screen.HomeScreen.route))
                 }
                 is Resource.Error -> {
                     _loginState.value = loginState.value.copy(isLoading = false)
@@ -161,14 +161,7 @@ class LoginViewModel @Inject constructor(
                 is Resource.Success -> {
                     _loginState.value = loginState.value.copy(isLoading = false)
                     _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.login_successful)))
-
-                    val name = nameUseCases.getUserName().firstOrNull()
-                    val targetRoute = if (name.isNullOrBlank()) {
-                        Screen.NameScreen.route
-                    } else {
-                        Screen.HomeScreen.route
-                    }
-                    _eventFlow.emit(UiEvent.Navigate(targetRoute))
+                    _eventFlow.emit(UiEvent.Navigate(Screen.HomeScreen.route))
                 }
                 is Resource.Error -> {
                     _loginState.value = loginState.value.copy(isLoading = false)

@@ -13,7 +13,6 @@ import com.madi.smarttask.core.presentation.util.asString
 import com.madi.smarttask.core.util.UiText
 import com.madi.smarttask.feature_auth.presentation.login.LoginScreen
 import com.madi.smarttask.feature_auth.presentation.register.RegisterScreen
-import com.madi.smarttask.feature_name.presentation.NameScreen
 import com.madi.smarttask.feature_notification.presentation.NotificationScreen
 import com.madi.smarttask.feature_onboarding.presentation.OnboardingScreen
 import com.madi.smarttask.feature_setting.SettingScreen
@@ -130,16 +129,6 @@ fun Navigation(
         ) {
             AboutScreen(
                 onNavigateUp = navController::navigateUp
-            )
-        }
-        composable(
-            route = Screen.NameScreen.route
-        ) {
-            NameScreen(
-                onNavigate = { route ->
-                    navController.popBackStack()
-                    navController.navigate(route)
-                }
             )
         }
         composable(

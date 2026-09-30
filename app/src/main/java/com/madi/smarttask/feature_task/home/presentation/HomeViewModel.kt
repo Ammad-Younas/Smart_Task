@@ -2,17 +2,17 @@ package com.madi.smarttask.feature_task.home.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.madi.smarttask.core.data.preferences.SettingsDataStore
 import com.madi.smarttask.core.domain.model.Priority
 import com.madi.smarttask.core.domain.model.Task
 import com.madi.smarttask.core.domain.usecase.TaskUseCases
 import com.madi.smarttask.core.util.DateFormatUtil
-import com.madi.smarttask.feature_name.domain.usecase.NameUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,7 +20,8 @@ import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val nameUseCases: NameUseCases,
+    private val settingsDataStore: SettingsDataStore,
+    private val firebaseAuth: FirebaseAuth,
     private val taskUseCases: TaskUseCases
 ) : ViewModel() {
 
@@ -39,9 +40,15 @@ class HomeViewModel @Inject constructor(
 
     private fun checkUserName() {
         viewModelScope.launch {
-            val name = nameUseCases.getUserName().first()
-            if (!name.isNullOrBlank()) {
-                _state.update { it.copy(userName = name) }
+            settingsDataStore.userName.collect { name ->
+                val displayName = if (!name.isNullOrBlank()) {
+                    name
+                } else {
+                    firebaseAuth.currentUser?.displayName ?: ""
+                }
+                if (displayName.isNotBlank()) {
+                    _state.update { it.copy(userName = displayName) }
+                }
             }
         }
     }
@@ -67,47 +74,23 @@ class HomeViewModel @Inject constructor(
                 targetTimeMillis = nearestUpcomingTask?.dueDate ?: 0L
 
                 _state.update { it.copy(percentage = percentage) }
-                filterAndUpdateUpcomingTasks()
+                updateUpcomingTasks()
                 updateTimeRemaining()
             }
         }
     }
 
-    fun toggleSearch(isSearching: Boolean) {
-        _state.update {
-            it.copy(
-                isSearching = isSearching,
-                searchQuery = if (!isSearching) "" else it.searchQuery
-            )
-        }
-        filterAndUpdateUpcomingTasks()
-    }
-
-    fun onSearchQueryChange(query: String) {
-        _state.update { it.copy(searchQuery = query) }
-        filterAndUpdateUpcomingTasks()
-    }
-
-    private fun filterAndUpdateUpcomingTasks() {
-        val query = state.value.searchQuery.trim()
+    private fun updateUpcomingTasks() {
         val tasks = cachedTasks
-
-        val filtered = if (query.isNotBlank()) {
-            tasks.filter {
-                it.title.contains(query, ignoreCase = true) ||
-                (it.description?.contains(query, ignoreCase = true) == true)
-            }
+        val sortedTasks = tasks.sortedWith(
+            compareByDescending<Task> { it.priority.ordinal }
+                .thenByDescending { it.dueDate }
+        )
+        val urgentTasks = sortedTasks.filter { it.priority == Priority.URGENT }
+        val filtered = if (urgentTasks.size >= 3) {
+            urgentTasks.sortedByDescending { it.dueDate }
         } else {
-            val sortedTasks = tasks.sortedWith(
-                compareByDescending<Task> { it.priority.ordinal }
-                    .thenByDescending { it.dueDate }
-            )
-            val urgentTasks = sortedTasks.filter { it.priority == Priority.URGENT }
-            if (urgentTasks.size >= 3) {
-                urgentTasks.sortedByDescending { it.dueDate }
-            } else {
-                sortedTasks.take(3)
-            }
+            sortedTasks.take(3)
         }
 
         _state.update { it.copy(upcomingTasks = filtered) }

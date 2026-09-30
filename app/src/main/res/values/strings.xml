@@ -148,6 +148,9 @@
     <string name="error_google_sign_in_failed">Google sign-in failed. Please try again.</string>
     <string name="error_google_sign_up_failed">Google sign-up failed. Please try again.</string>
     <string name="error_configure_web_client_id">Please configure default_web_client_id in strings.xml or google-services.json</string>
+    <string name="error_no_google_account">No Google account found on this device. Please add a Google account in Android Settings and try again.</string>
+    <string name="error_google_sign_in_canceled">Google sign-in canceled</string>
+    <string name="error_google_sign_up_canceled">Google sign-up canceled</string>
     <string name="default_web_client_id" translatable="false">YOUR_DEFAULT_WEB_CLIENT_ID</string>
     <string name="unknown_error">Unknown Error</string>
 </resources>

@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.madi.smarttask.core.data.preferences.SettingsDataStore
 import com.madi.smarttask.core.presentation.navigation.Screen
-import com.madi.smarttask.feature_name.domain.usecase.NameUseCases
 import com.madi.smarttask.feature_onboarding.domain.usecase.OnboardingUseCases
 import com.madi.smarttask.feature_setting.domain.util.ThemeMode
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +24,6 @@ import kotlin.time.Duration.Companion.milliseconds
 @HiltViewModel
 class MainViewModel @Inject constructor(
     onboardingUseCases: OnboardingUseCases,
-    nameUseCases: NameUseCases,
     settingsDataStore: SettingsDataStore,
     firebaseAuth: FirebaseAuth
 ) : ViewModel() {
@@ -46,15 +44,13 @@ class MainViewModel @Inject constructor(
     init {
         combine(
             onboardingUseCases.isOnboardingCompleted(),
-            nameUseCases.getUserName()
-        ) { isCompleted, name ->
+            settingsDataStore.userName
+        ) { isCompleted, _ ->
             val isUserLoggedIn = firebaseAuth.currentUser != null
             if (!isCompleted) {
                 _startDestination.value = Screen.OnBoardingScreen.route
             } else if (!isUserLoggedIn) {
                 _startDestination.value = Screen.LoginScreen.route
-            } else if (name.isNullOrBlank()) {
-                _startDestination.value = Screen.NameScreen.route
             } else {
                 _startDestination.value = Screen.HomeScreen.route
             }

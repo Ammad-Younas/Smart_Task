@@ -3,20 +3,16 @@ package com.madi.smarttask.core.domain.util
 import android.util.Patterns
 import com.madi.smarttask.core.util.Constants
 import com.madi.smarttask.feature_auth.presentation.util.AuthError
-import com.madi.smarttask.feature_name.presentation.NameError
 import com.madi.smarttask.feature_task.task.presentation.TaskError
 
 object ValidationUtil {
-    fun validateUsername(username: String) : NameError? {
+    fun validateUsername(username: String) : AuthError? {
         val trimmedUsername = username.trim()
         if (trimmedUsername.isBlank()){
-            return NameError.FieldEmpty()
+            return AuthError.FieldEmpty
         }
         if (trimmedUsername.length < Constants.MIN_NAME_LENGTH){
-            return NameError.InputTooShort()
-        }
-        if (trimmedUsername.length > Constants.MAX_NAME_LENGTH){
-            return NameError.InputTooLong()
+            return AuthError.InputTooShort
         }
         return null
     }
@@ -32,7 +28,6 @@ object ValidationUtil {
         return null
     }
 
-
     fun validatePassword(password: String) : AuthError? {
         if (password.isBlank()){
             return AuthError.FieldEmpty
@@ -47,7 +42,6 @@ object ValidationUtil {
         }
         return null
     }
-
 
     fun validateTitle(title: String) : TaskError? {
         val trimmedTitle = title.trim()

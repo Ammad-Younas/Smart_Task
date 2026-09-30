@@ -4,24 +4,31 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.database.FirebaseDatabase
 import com.madi.smarttask.R
+import com.madi.smarttask.core.data.preferences.SettingsDataStore
 import com.madi.smarttask.core.util.Resource
 import com.madi.smarttask.core.util.SimpleResource
 import com.madi.smarttask.core.util.UiText
 import com.madi.smarttask.feature_auth.domain.repository.AuthRepository
-import com.madi.smarttask.feature_name.domain.usecase.NameUseCases
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
-    private val nameUseCases: NameUseCases
+    private val settingsDataStore: SettingsDataStore
 ) : AuthRepository {
 
     override suspend fun login(email: String, password: String): SimpleResource {
         return try {
             val result = firebaseAuth.signInWithEmailAndPassword(email.trim(), password).await()
-            if (result.user != null) {
+            val user = result.user
+            if (user != null) {
+                val displayName = user.displayName
+                if (!displayName.isNullOrBlank()) {
+                    settingsDataStore.saveUserName(displayName)
+                }
                 Resource.Success(Unit)
             } else {
                 Resource.Error(UiText.StringResource(R.string.check_your_internet))
@@ -38,9 +45,26 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun register(email: String, username: String, password: String): SimpleResource {
         return try {
             val result = firebaseAuth.createUserWithEmailAndPassword(email.trim(), password).await()
-            if (result.user != null) {
-                if (username.isNotBlank()) {
-                    nameUseCases.saveUserName(username.trim())
+            val user = result.user
+            if (user != null) {
+                val trimmedUsername = username.trim()
+                if (trimmedUsername.isNotBlank()) {
+                    settingsDataStore.saveUserName(trimmedUsername)
+                    val profileUpdates = UserProfileChangeRequest.Builder()
+                        .setDisplayName(trimmedUsername)
+                        .build()
+                    try {
+                        user.updateProfile(profileUpdates).await()
+                    } catch (_: Exception) { }
+
+                    val userMap = mapOf(
+                        "uid" to user.uid,
+                        "username" to trimmedUsername,
+                        "email" to email.trim()
+                    )
+                    try {
+                        FirebaseDatabase.getInstance().getReference("users").child(user.uid).setValue(userMap).await()
+                    } catch (_: Exception) { }
                 }
                 Resource.Success(Unit)
             } else {
@@ -59,10 +83,19 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             val result = firebaseAuth.signInWithCredential(credential).await()
-            if (result.user != null) {
-                val displayName = result.user?.displayName
+            val user = result.user
+            if (user != null) {
+                val displayName = user.displayName
                 if (!displayName.isNullOrBlank()) {
-                    nameUseCases.saveUserName(displayName)
+                    settingsDataStore.saveUserName(displayName)
+                    val userMap = mapOf(
+                        "uid" to user.uid,
+                        "username" to displayName,
+                        "email" to (user.email ?: "")
+                    )
+                    try {
+                        FirebaseDatabase.getInstance().getReference("users").child(user.uid).setValue(userMap).await()
+                    } catch (_: Exception) { }
                 }
                 Resource.Success(Unit)
             } else {
