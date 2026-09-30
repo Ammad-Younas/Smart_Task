@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     id("kotlin-parcelize")
+    alias(libs.plugins.com.google.gms.google.services)
 }
 
 android {
@@ -108,5 +109,16 @@ dependencies {
     // Coil (Image Loading & SVG Support)
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
+
+    // Retrofit & OkHttp
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.kotlinx.serialization)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
+
+    // Firebase BOM
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.database)
 
 }
